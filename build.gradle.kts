@@ -1,0 +1,36 @@
+plugins {
+    id("root.publications")
+
+    alias(libs.plugins.kotlin.multiplatform).apply(false)
+    alias(libs.plugins.kotlin.serialization).apply(false)
+    alias(libs.plugins.kotlin.cocoapods).apply(false)
+
+    alias(libs.plugins.dokka).apply(false)
+    alias(libs.plugins.maven.publish).apply(false)
+
+    alias(libs.plugins.git.versioning)
+}
+
+allprojects {
+    group = "work.socialhub.kmixi2web"
+    version = "0.1.0-SNAPSHOT"
+
+    repositories {
+        mavenCentral()
+        maven { url = uri("https://repo.repsy.io/mvn/uakihir0/public") }
+    }
+}
+
+gitVersioning.apply {
+    refs {
+        considerTagsOnBranches = true
+        tag("v(?<version>.*)") {
+            version = "\${ref.version}"
+        }
+    }
+}
+
+tasks.wrapper {
+    gradleVersion = "9.6.1"
+    distributionType = Wrapper.DistributionType.ALL
+}
