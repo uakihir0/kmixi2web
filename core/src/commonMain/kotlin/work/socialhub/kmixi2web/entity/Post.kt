@@ -84,6 +84,8 @@ class Post(
     @ProtoNumber(28)
     @ProtoPacked
     var decorations: List<Int> = emptyList(),
+    @ProtoNumber(29)
+    var stamps: List<PostStamp> = emptyList(),
     @ProtoNumber(30)
     var readerStampId: String? = null,
     @ProtoNumber(31)

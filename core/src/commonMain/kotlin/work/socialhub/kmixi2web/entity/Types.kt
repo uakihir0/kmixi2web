@@ -25,3 +25,11 @@ enum class PostPublishingType {
     UNSPECIFIED,
     FOLLOW_AND_COMMUNITY,
 }
+
+@Serializable
+@JsExport
+enum class LanguageCode {
+    UNKNOWN,
+    JP,
+    EN,
+}
