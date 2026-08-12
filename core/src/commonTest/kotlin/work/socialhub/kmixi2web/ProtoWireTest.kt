@@ -1,11 +1,18 @@
 package work.socialhub.kmixi2web
 
 import kotlinx.serialization.protobuf.ProtoBuf
+import work.socialhub.kmixi2web.api.request.AddStampToPostRequest
 import work.socialhub.kmixi2web.api.request.CreatePostRequest
+import work.socialhub.kmixi2web.api.request.GetLikingPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetPostRequest
+import work.socialhub.kmixi2web.api.request.GetPostStampReactionsRequest
+import work.socialhub.kmixi2web.api.request.GetStampsRequest
 import work.socialhub.kmixi2web.api.request.GetSubscribingFeedsRequest
 import work.socialhub.kmixi2web.api.response.GetPostResponse
+import work.socialhub.kmixi2web.api.response.GetPostStampReactionsResponse
+import work.socialhub.kmixi2web.api.response.GetLikingPersonasResponse
 import work.socialhub.kmixi2web.entity.FeedSourceType
+import work.socialhub.kmixi2web.entity.LanguageCode
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -86,6 +93,151 @@ class ProtoWireTest {
         assertEquals("p", decoded.post?.postId)
         assertEquals(3, decoded.post?.likesCount)
         assertEquals("hi", decoded.post?.text)
+    }
+
+    @Test
+    fun stampReactionRequestMatchesObservedFields() {
+        val encoded = proto.encodeToByteArray(
+            GetPostStampReactionsRequest.serializer(),
+            GetPostStampReactionsRequest(
+                postId = "p",
+                cursor = "c",
+                limit = 50,
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x0A, 0x01, 0x70,
+                0x12, 0x01, 0x63,
+                0x18, 0x32,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun stampCatalogRequestMatchesObservedFields() {
+        val encoded = proto.encodeToByteArray(
+            GetStampsRequest.serializer(),
+            GetStampsRequest(
+                officialStampLanguage = LanguageCode.JP,
+                communityIds = listOf("c1", "c2"),
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x08, 0x01,
+                0x12, 0x02, 0x63, 0x31,
+                0x12, 0x02, 0x63, 0x32,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun reactionMutationRequestMatchesObservedFields() {
+        val encoded = proto.encodeToByteArray(
+            AddStampToPostRequest.serializer(),
+            AddStampToPostRequest(
+                postId = "p",
+                stampId = "s",
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x0A, 0x01, 0x70,
+                0x12, 0x01, 0x73,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun likingPersonasRequestMatchesObservedFields() {
+        val encoded = proto.encodeToByteArray(
+            GetLikingPersonasRequest.serializer(),
+            GetLikingPersonasRequest(
+                postId = "p",
+                limit = 50,
+                cursor = "c",
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x0A, 0x01, 0x70,
+                0x10, 0x32,
+                0x1A, 0x01, 0x63,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun postResponseDecodesStampCountAndImageUrl() {
+        val decoded = proto.decodeFromByteArray(
+            GetPostResponse.serializer(),
+            bytes(
+                0x0A, 0x10,
+                0x0A, 0x01, 0x70,
+                0xEA, 0x01, 0x0A,
+                0x0A, 0x06,
+                0x0A, 0x01, 0x73,
+                0x12, 0x01, 0x75,
+                0x10, 0x03,
+            ),
+        )
+
+        val stamp = decoded.post?.stamps?.single()
+        assertEquals("s", stamp?.stamp?.stampId)
+        assertEquals("u", stamp?.stamp?.url)
+        assertEquals(3, stamp?.count)
+    }
+
+    @Test
+    fun stampReactionResponseDecodesSummaryPersonaAndCursor() {
+        val decoded = proto.decodeFromByteArray(
+            GetPostStampReactionsResponse.serializer(),
+            bytes(
+                0x0A, 0x0A,
+                0x0A, 0x06,
+                0x0A, 0x01, 0x73,
+                0x12, 0x01, 0x75,
+                0x10, 0x03,
+                0x12, 0x08,
+                0x0A, 0x01, 0x73,
+                0x12, 0x03,
+                0x0A, 0x01, 0x70,
+                0x1A, 0x01, 0x63,
+            ),
+        )
+
+        assertEquals("s", decoded.stamps.single().stamp?.stampId)
+        assertEquals("u", decoded.stamps.single().stamp?.url)
+        assertEquals(3, decoded.stamps.single().count)
+        assertEquals("s", decoded.stampReactions.single().stampId)
+        assertEquals("p", decoded.stampReactions.single().persona?.personaId)
+        assertEquals("c", decoded.nextCursor)
+    }
+
+    @Test
+    fun likingPersonasResponseDecodesPagination() {
+        val decoded = proto.decodeFromByteArray(
+            GetLikingPersonasResponse.serializer(),
+            bytes(
+                0x0A, 0x03,
+                0x0A, 0x01, 0x70,
+                0x12, 0x01, 0x63,
+                0x18, 0x01,
+            ),
+        )
+
+        assertEquals("p", decoded.personas.single().personaId)
+        assertEquals("c", decoded.nextCursor)
+        assertEquals(true, decoded.hasNext)
     }
 
     private fun bytes(vararg values: Int): ByteArray {

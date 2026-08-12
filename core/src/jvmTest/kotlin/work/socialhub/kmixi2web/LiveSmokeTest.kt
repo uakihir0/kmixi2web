@@ -2,14 +2,10 @@ package work.socialhub.kmixi2web
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Assumptions.assumeTrue
 import work.socialhub.kmixi2web.api.request.CreatePostRequest
 import work.socialhub.kmixi2web.api.request.GetPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetPostRequest
 import work.socialhub.kmixi2web.api.request.GetSubscribingFeedsRequest
-import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -19,7 +15,7 @@ class LiveSmokeTest {
     @Test
     fun authenticatedRead() = runBlocking {
         requireMode("read", "post")
-        val client = liveClient()
+        val client = LiveTestSupport.client()
         val response = client.timeline().getSubscribingFeeds(
             GetSubscribingFeedsRequest(limit = 10)
         )
@@ -47,7 +43,7 @@ class LiveSmokeTest {
     @Test
     fun createNaturalPost() = runBlocking {
         requireMode("post")
-        val client = liveClient()
+        val client = LiveTestSupport.client()
         val created = client.post().createPost(
             CreatePostRequest(text = POST_TEXT)
         )
@@ -83,33 +79,11 @@ class LiveSmokeTest {
         throw AssertionError("Created post could not be fetched", lastFailure)
     }
 
-    private fun liveClient(): Mixi2Web {
-        val file = File("../secrets.json")
-        assumeTrue(file.isFile, "Create secrets.json in the repository root")
-        val secrets = Json.decodeFromString<Secrets>(file.readText())
-        assumeTrue(
-            secrets.cookie.isNotBlank() && secrets.authKey.isNotBlank(),
-            "cookie and authKey are required",
-        )
-        return Mixi2WebFactory.instance(secrets.cookie, secrets.authKey)
-    }
-
     private fun requireMode(vararg accepted: String) {
-        val mode = System.getenv(LIVE_MODE_ENV)
-        assumeTrue(
-            mode in accepted,
-            "Set $LIVE_MODE_ENV to ${accepted.joinToString(" or ")}",
-        )
+        LiveTestSupport.requireMode(*accepted)
     }
-
-    @Serializable
-    private class Secrets(
-        val cookie: String,
-        val authKey: String,
-    )
 
     companion object {
-        private const val LIVE_MODE_ENV = "KMIXI2WEB_LIVE_MODE"
         private const val POST_TEXT = "ねむい"
     }
 }
