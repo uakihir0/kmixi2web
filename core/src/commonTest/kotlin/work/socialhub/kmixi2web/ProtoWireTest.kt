@@ -4,15 +4,21 @@ import kotlinx.serialization.protobuf.ProtoBuf
 import work.socialhub.kmixi2web.api.request.AddStampToPostRequest
 import work.socialhub.kmixi2web.api.request.CreatePostRequest
 import work.socialhub.kmixi2web.api.request.GetLikingPersonasRequest
+import work.socialhub.kmixi2web.api.request.GetNotificationsRequest
 import work.socialhub.kmixi2web.api.request.GetPostRequest
 import work.socialhub.kmixi2web.api.request.GetPostStampReactionsRequest
 import work.socialhub.kmixi2web.api.request.GetStampsRequest
 import work.socialhub.kmixi2web.api.request.GetSubscribingFeedsRequest
+import work.socialhub.kmixi2web.api.request.MarkNotificationAsReadRequest
+import work.socialhub.kmixi2web.api.request.MarkNotificationsAsReadBeforeTimeRequest
+import work.socialhub.kmixi2web.api.response.GetBadgeCountResponse
+import work.socialhub.kmixi2web.api.response.GetNotificationsResponse
 import work.socialhub.kmixi2web.api.response.GetPostResponse
 import work.socialhub.kmixi2web.api.response.GetPostStampReactionsResponse
 import work.socialhub.kmixi2web.api.response.GetLikingPersonasResponse
 import work.socialhub.kmixi2web.entity.FeedSourceType
 import work.socialhub.kmixi2web.entity.LanguageCode
+import work.socialhub.kmixi2web.entity.NotificationActivityType
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -177,6 +183,52 @@ class ProtoWireTest {
     }
 
     @Test
+    fun notificationRequestPreservesNonSequentialActivityValues() {
+        val encoded = proto.encodeToByteArray(
+            GetNotificationsRequest.serializer(),
+            GetNotificationsRequest(
+                activityType = NotificationActivityType.REPLY,
+                limit = 50,
+                untilTimeSeriesId = "u",
+                endTimeSeriesId = "e",
+                activityTypes = listOf(
+                    NotificationActivityType.LIKE,
+                    NotificationActivityType.REACTION,
+                ),
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x08, 0xCC, 0x01,
+                0x10, 0x32,
+                0x1A, 0x01, 0x75,
+                0x22, 0x01, 0x65,
+                0x2A, 0x04, 0xC8, 0x01, 0xCE, 0x01,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun markNotificationRequestsUseTimeSeriesIdField() {
+        val single = proto.encodeToByteArray(
+            MarkNotificationAsReadRequest.serializer(),
+            MarkNotificationAsReadRequest(timeSeriesId = "t"),
+        )
+        val beforeTime = proto.encodeToByteArray(
+            MarkNotificationsAsReadBeforeTimeRequest.serializer(),
+            MarkNotificationsAsReadBeforeTimeRequest(
+                latestTimeSeriesId = "t",
+            ),
+        )
+
+        val expected = bytes(0x0A, 0x01, 0x74)
+        assertContentEquals(expected, single)
+        assertContentEquals(expected, beforeTime)
+    }
+
+    @Test
     fun postResponseDecodesStampCountAndImageUrl() {
         val decoded = proto.decodeFromByteArray(
             GetPostResponse.serializer(),
@@ -238,6 +290,57 @@ class ProtoWireTest {
         assertEquals("p", decoded.personas.single().personaId)
         assertEquals("c", decoded.nextCursor)
         assertEquals(true, decoded.hasNext)
+    }
+
+    @Test
+    fun notificationResponseDecodesPostAndReactionImage() {
+        val decoded = proto.decodeFromByteArray(
+            GetNotificationsResponse.serializer(),
+            bytes(
+                0x0A, 0x18,
+                0x08, 0xC8, 0x01,
+                0x12, 0x02, 0x08, 0x01,
+                0x1A, 0x01, 0x74,
+                0x22, 0x01, 0x69,
+                0x2A, 0x01, 0x70,
+                0x42, 0x06,
+                0x0A, 0x01, 0x73,
+                0x12, 0x01, 0x75,
+                0x10, 0x01,
+            ),
+        )
+
+        val notification = decoded.notifications.single()
+        assertEquals(NotificationActivityType.LIKE, notification.activityType)
+        assertEquals(1, notification.createdAt?.seconds)
+        assertEquals("t", notification.timeSeriesId)
+        assertEquals("i", notification.issuerId)
+        assertEquals("p", notification.postId)
+        assertEquals("s", notification.reaction?.stampId)
+        assertEquals("u", notification.reaction?.imageUrl)
+        assertEquals(true, decoded.hasNext)
+    }
+
+    @Test
+    fun badgeCountResponseDecodesPackedUnreadList() {
+        val decoded = proto.decodeFromByteArray(
+            GetBadgeCountResponse.serializer(),
+            bytes(
+                0x08, 0x01,
+                0x10, 0x02,
+                0x18, 0x03,
+                0x20, 0x04,
+                0x28, 0x05,
+                0x32, 0x03, 0x01, 0x00, 0x01,
+            ),
+        )
+
+        assertEquals(1, decoded.accountUnreadCount)
+        assertEquals(2, decoded.personaUnreadNotificationCount)
+        assertEquals(3, decoded.personaUnreadActiveRoomCount)
+        assertEquals(4, decoded.personaUnreadRequestedRoomCount)
+        assertEquals(5, decoded.personaUnreadMutedRoomCount)
+        assertEquals(listOf(true, false, true), decoded.unreadList)
     }
 
     private fun bytes(vararg values: Int): ByteArray {
