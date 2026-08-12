@@ -14,6 +14,9 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Replies, ancestors, and thread posts
 - Text, reply, quote, repost, community, and media post creation
 - Post deletion
+- Like counts, stamp reaction counts, and stamp image URLs
+- Stamp catalog and per-post stamp reaction lookup
+- Like and stamp creation/removal
 - Persona lookup by ID or name
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
@@ -53,6 +56,25 @@ val created = mixi2.post().createPost(
     CreatePostRequest(text = "Hello from Kotlin Multiplatform")
 )
 ```
+
+Reaction summaries are included in each `Post`:
+
+```kotlin
+val post = mixi2.post().getPost(GetPostRequest("POST_ID")).data.post!!
+
+println(post.likesCount)
+post.stamps.forEach { summary ->
+    println("${summary.stamp?.url}: ${summary.count}")
+}
+
+val reactions = mixi2.reaction().getPostStampReactions(
+    GetPostStampReactionsRequest(post.postId, limit = 100)
+)
+```
+
+`reaction().getStamps(...)` returns the available stamp catalog, including
+stamp IDs and image URLs. `getLikingPersonas(...)` is restricted by the mixi2
+service to the post owner.
 
 Reply and quote creation use the same RPC:
 
@@ -103,6 +125,25 @@ licensed `mixi2` npm package version 0.2.2.
 ./gradlew :core:jvmTest
 ./gradlew :core:compileKotlinJs
 ```
+
+Authenticated live tests read `secrets.json` from the repository root. Copy
+`secrets.json.default`, fill in your own cookie and auth key, and keep the file
+untracked.
+
+```shell
+KMIXI2WEB_LIVE_MODE=reaction-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.ReactionLiveTest.readReactionCountsAndImageUrls
+
+KMIXI2WEB_LIVE_MODE=reaction-write \
+KMIXI2WEB_POST_ID=YOUR_OWN_POST_ID \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.ReactionLiveTest.controlledReactionRoundTrip
+```
+
+The write test requires a post you own without an existing like or stamp from
+the active persona. It adds and then removes both reactions and verifies that
+the original counts are restored.
 
 ## License
 

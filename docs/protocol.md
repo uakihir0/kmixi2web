@@ -83,6 +83,27 @@ surface including IDs, timestamps, text, counts, media, reply/repost/quote
 references, reactions, links, mentions, decorations, and mask state. Unknown
 fields are skipped by protobuf decoding.
 
+### Reactions
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetPostStampReactions` | post ID, cursor, limit | stamp summaries, reacting personas, next cursor |
+| `GetStamps` | language, repeated community IDs | official, community, and obtained stamp sets |
+| `AddStampToPost` | post ID, stamp ID | updated post |
+| `RemoveStampFromPost` | post ID, stamp ID | updated post |
+| `CreateLike` | post ID | updated post |
+| `DeleteLike` | post ID | updated post |
+| `GetLikingPersonas` | post ID, limit, cursor | personas, next cursor, has-next flag |
+
+`Post.stamps` is field 29. Each entry contains a stamp ID, image URL, and
+reaction count. `Post.readerStampId` is field 30 and identifies the active
+persona's stamp reaction. `Post.likesCount` and `Post.liked` are fields 9 and
+16.
+
+`GetPostStampReactions` can be used to paginate the personas behind each stamp
+summary. `GetLikingPersonas` is accepted only when the active persona owns the
+post; non-owners receive an owner-only service error.
+
 ### Personas
 
 | RPC | Request | Response |
@@ -95,16 +116,16 @@ Timeline posts contain `persona_id`; clients can batch those IDs through
 
 ## Other observed MercuryService groups
 
-The service also exposes authentication/session, follows, likes, bookmarks,
-stamps, notifications, communities/events, chat, media upload preparation,
-search, profile, moderation, and remote-settings RPCs. They can be called with
+The service also exposes authentication/session, follows, bookmarks,
+notifications, communities/events, chat, media upload preparation, search,
+profile, moderation, and remote-settings RPCs. They can be called with
 `RawResource` immediately and should be promoted to typed resources only after
 their field numbers are covered by offline wire tests.
 
 Representative method names:
 
 - Session: `Signin`, `SignOut`, `GetSession`, `RefreshToken`, `SwitchPersona`
-- Engagement: `CreateLike`, `DeleteLike`, `CreateBookmark`, `DeleteBookmark`
+- Engagement: `CreateBookmark`, `DeleteBookmark`
 - Social graph: `GetFollowers`, `GetFollowings`, `CreateFollowing`,
   `DeleteFollowing`
 - Communities: `GetCommunity`, `GetCommunityTimeline`, `CreateCommunity`,
