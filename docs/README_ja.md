@@ -13,6 +13,8 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - いいね数、stamp リアクション数、stamp 画像 URL の取得
 - stamp カタログ、ポストごとの stamp 反応者一覧
 - いいね・stamp の追加と解除
+- 通知一覧、種類絞り込み、未読バッジ数の取得
+- 通知の個別既読・指定時点以前の一括既読
 - ID・ユーザー名によるペルソナ取得
 - 未型定義 RPC を呼び出す raw unary API
 
@@ -58,6 +60,33 @@ val reactions = mixi2.reaction().getPostStampReactions(
 stamp カタログを取得できます。`getLikingPersonas(...)` は mixi2 側の制約により、
 そのポストの投稿者だけが呼び出せます。
 
+通知はページングと activity type による絞り込みに対応しています。
+
+```kotlin
+val badge = mixi2.notification().getBadgeCount()
+println(badge.data.personaUnreadNotificationCount)
+
+val notifications = mixi2.notification().getNotifications(
+    GetNotificationsRequest(
+        limit = 50,
+        activityTypes = listOf(
+            NotificationActivityType.REPLY,
+            NotificationActivityType.MENTION,
+            NotificationActivityType.REACTION,
+        ),
+    )
+)
+
+notifications.data.notifications.forEach {
+    println("${it.activityType}: ${it.postId}")
+    println(it.reaction?.imageUrl)
+}
+```
+
+通知には発行者 ID、投稿 ID、コミュニティ ID、stamp ID・画像 URL などが
+含まれます。`markNotificationAsRead(...)` と
+`markNotificationsAsReadBeforeTime(...)` はサーバー側の既読状態を変更します。
+
 返信は `inReplyToPostId`、引用は `quotePostId` を指定します。
 
 ## JavaScript ブラウザ
@@ -88,6 +117,10 @@ KMIXI2WEB_LIVE_MODE=reaction-write \
 KMIXI2WEB_POST_ID=自分のポストID \
   ./gradlew :core:jvmTest \
   --tests work.socialhub.kmixi2web.ReactionLiveTest.controlledReactionRoundTrip
+
+KMIXI2WEB_LIVE_MODE=notification-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.NotificationLiveTest.readNotificationsAndBadgeCounts
 ```
 
 書き込みテストには、実行中のペルソナがまだいいね・stamp を付けていない自分の

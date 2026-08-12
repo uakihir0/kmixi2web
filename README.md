@@ -17,6 +17,8 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Like counts, stamp reaction counts, and stamp image URLs
 - Stamp catalog and per-post stamp reaction lookup
 - Like and stamp creation/removal
+- Notifications, activity filtering, and unread badge counts
+- Individual and time-based notification read markers
 - Persona lookup by ID or name
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
@@ -75,6 +77,32 @@ val reactions = mixi2.reaction().getPostStampReactions(
 `reaction().getStamps(...)` returns the available stamp catalog, including
 stamp IDs and image URLs. `getLikingPersonas(...)` is restricted by the mixi2
 service to the post owner.
+
+Notifications can be paged and filtered by activity type:
+
+```kotlin
+val badge = mixi2.notification().getBadgeCount()
+println(badge.data.personaUnreadNotificationCount)
+
+val notifications = mixi2.notification().getNotifications(
+    GetNotificationsRequest(
+        limit = 50,
+        activityTypes = listOf(
+            NotificationActivityType.REPLY,
+            NotificationActivityType.MENTION,
+            NotificationActivityType.REACTION,
+        ),
+    )
+)
+
+notifications.data.notifications.forEach {
+    println("${it.activityType}: ${it.postId}")
+    println(it.reaction?.imageUrl)
+}
+```
+
+`markNotificationAsRead(...)` and `markNotificationsAsReadBeforeTime(...)`
+change the server-side read state.
 
 Reply and quote creation use the same RPC:
 
@@ -139,6 +167,10 @@ KMIXI2WEB_LIVE_MODE=reaction-write \
 KMIXI2WEB_POST_ID=YOUR_OWN_POST_ID \
   ./gradlew :core:jvmTest \
   --tests work.socialhub.kmixi2web.ReactionLiveTest.controlledReactionRoundTrip
+
+KMIXI2WEB_LIVE_MODE=notification-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.NotificationLiveTest.readNotificationsAndBadgeCounts
 ```
 
 The write test requires a post you own without an existing like or stamp from

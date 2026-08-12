@@ -13,6 +13,8 @@ protobuf RPC interface.
 - `TimelineResource`: feed and timeline reads
 - `PostResource`: post reads, creation, replies, quotes, and deletion
 - `PersonaResource`: persona lookup
+- `ReactionResource`: likes, stamps, reaction counts, and reaction personas
+- `NotificationResource`: notifications, unread counts, and read markers
 - `RawResource`: untyped unary RPC calls
 
 ## Protocol

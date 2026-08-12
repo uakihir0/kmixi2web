@@ -104,6 +104,26 @@ persona's stamp reaction. `Post.likesCount` and `Post.liked` are fields 9 and
 summary. `GetLikingPersonas` is accepted only when the active persona owns the
 post; non-owners receive an owner-only service error.
 
+### Notifications
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetNotifications` | activity types, limit, time-series cursors | notifications and has-next flag |
+| `GetBadgeCount` | empty | account, notification, and chat unread counts |
+| `MarkNotificationAsRead` | notification time-series ID | empty |
+| `MarkNotificationsAsReadBeforeTime` | latest time-series ID | empty |
+
+Each notification contains an activity type, timestamp, time-series ID, and
+issuer ID. Depending on its type it can also include a post ID, community ID,
+community or following request ID, and stamp reaction details with an image
+URL.
+
+Notification activity values are non-contiguous protobuf enum numbers:
+follow-related values use the 100 range, post activity uses the 200 range,
+community activity uses the 300 range, and event activity uses the 400 range.
+The client uses a custom serializer so values such as reply `204`, mention
+`205`, and reaction `206` are not encoded as Kotlin enum ordinals.
+
 ### Personas
 
 | RPC | Request | Response |
@@ -117,10 +137,10 @@ Timeline posts contain `persona_id`; clients can batch those IDs through
 ## Other observed MercuryService groups
 
 The service also exposes authentication/session, follows, bookmarks,
-notifications, communities/events, chat, media upload preparation, search,
-profile, moderation, and remote-settings RPCs. They can be called with
-`RawResource` immediately and should be promoted to typed resources only after
-their field numbers are covered by offline wire tests.
+communities/events, chat, media upload preparation, search, profile,
+moderation, and remote-settings RPCs. They can be called with `RawResource`
+immediately and should be promoted to typed resources only after their field
+numbers are covered by offline wire tests.
 
 Representative method names:
 
