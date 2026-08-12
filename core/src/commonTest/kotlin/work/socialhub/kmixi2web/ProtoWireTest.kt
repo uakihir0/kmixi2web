@@ -53,6 +53,7 @@ class ProtoWireTest {
                 inReplyToPostId = "p1",
                 mediaIds = listOf("m1", "m2"),
                 isSensitive = true,
+                decorations = listOf(1, 2),
             ),
         )
 
@@ -63,6 +64,7 @@ class ProtoWireTest {
                 0x22, 0x02, 0x6D, 0x31,
                 0x22, 0x02, 0x6D, 0x32,
                 0x30, 0x01,
+                0x4A, 0x02, 0x01, 0x02,
             ),
             encoded,
         )
