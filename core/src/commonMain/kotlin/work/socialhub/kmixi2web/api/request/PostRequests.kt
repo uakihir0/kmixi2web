@@ -2,6 +2,7 @@ package work.socialhub.kmixi2web.api.request
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlinx.serialization.protobuf.ProtoPacked
 import work.socialhub.kmixi2web.entity.PostMaskType
 import work.socialhub.kmixi2web.entity.PostPublishingType
 import kotlin.js.JsExport
@@ -75,6 +76,7 @@ class CreatePostRequest(
     @ProtoNumber(8)
     var attachedCommunityId: String? = null,
     @ProtoNumber(9)
+    @ProtoPacked
     var decorations: List<Int> = emptyList(),
     @ProtoNumber(10)
     var maskType: PostMaskType? = null,

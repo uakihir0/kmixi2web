@@ -2,6 +2,7 @@ package work.socialhub.kmixi2web.entity
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import kotlinx.serialization.protobuf.ProtoPacked
 import kotlin.js.JsExport
 
 @Serializable
@@ -81,6 +82,7 @@ class Post(
     @ProtoNumber(27)
     var mentions: List<PersonaName> = emptyList(),
     @ProtoNumber(28)
+    @ProtoPacked
     var decorations: List<Int> = emptyList(),
     @ProtoNumber(30)
     var readerStampId: String? = null,
