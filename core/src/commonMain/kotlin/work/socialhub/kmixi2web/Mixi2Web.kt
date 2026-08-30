@@ -1,6 +1,7 @@
 package work.socialhub.kmixi2web
 
 import work.socialhub.kmixi2web.api.FollowResource
+import work.socialhub.kmixi2web.api.ChatResource
 import work.socialhub.kmixi2web.api.CommunityResource
 import work.socialhub.kmixi2web.api.MediaResource
 import work.socialhub.kmixi2web.api.ModerationResource
@@ -27,6 +28,7 @@ interface Mixi2Web {
     fun search(): SearchResource
     fun media(): MediaResource
     fun community(): CommunityResource
+    fun chat(): ChatResource
     fun raw(): RawResource
 
     companion object {

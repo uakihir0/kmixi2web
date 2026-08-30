@@ -102,6 +102,26 @@ enum class CommunityVisibility {
 
 @Serializable
 @JsExport
+enum class ChatRoomStatus {
+    UNKNOWN,
+    ACCEPTED,
+    REQUESTED,
+    REQUESTING,
+}
+
+@Serializable
+@JsExport
+enum class ChatRoomMessageType {
+    MESSAGE,
+    SYSTEM_MESSAGE_INVITE,
+    SYSTEM_MESSAGE_JOIN,
+    SYSTEM_MESSAGE_LEAVE,
+    SYSTEM_MESSAGE_CHANGE_TITLE,
+    SYSTEM_MESSAGE_CHANGE_ICON,
+}
+
+@Serializable
+@JsExport
 enum class LanguageCode {
     UNKNOWN,
     JP,
