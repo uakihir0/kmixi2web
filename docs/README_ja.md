@@ -32,6 +32,9 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - メディアのアップロード準備・バイナリ送信・処理状態のポーリング
 - 参加コミュニティ一覧・コミュニティ取得・コミュニティタイムライン
 - コミュニティメンバー一覧・参加・参加申請・退会
+- チャットルーム一覧・ルーム取得・メッセージ履歴取得
+- ダイレクト・グループ・既存ルームへのメッセージ送信（メディア・ポスト共有対応）
+- チャットの未読ルーム数取得
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -210,6 +213,24 @@ val timeline = mixi2.community().getCommunityTimeline(
 `joinCommunity(...)` は `CommunityAccessLevel.PUBLIC` のコミュニティで使用します。
 `APPROVAL_REQUIRED` の場合は `requestJoinCommunity(...)` で申請し、管理者の承認が
 必要です。
+
+チャットは 1 対 1 とグループの両方に対応しています。
+
+```kotlin
+val rooms = mixi2.chat().getChatRooms(GetChatRoomsRequest(limit = 20)).data.rooms
+
+val messages = mixi2.chat().getChatRoomMessages(
+    GetChatRoomMessagesRequest(roomId = rooms.first().roomId, limit = 50)
+).data.messages
+
+mixi2.chat().sendDirectMessage(
+    SendDirectMessageRequest(receiverId = "PERSONA_ID", text = "hello")
+)
+```
+
+`sendDirectMessage(...)` はルームが存在しない場合に新規作成するため、ルーム ID は
+戻り値のメッセージから取得します。既知のルームには `sendMessageToRoom(...)`、
+複数の相手とグループルームを作成する場合は `sendGroupMessage(...)` を使用します。
 
 通知はページングと activity type による絞り込みに対応しています。
 

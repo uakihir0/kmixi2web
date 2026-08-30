@@ -36,6 +36,9 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Media upload preparation, binary upload, and processing status polling
 - Participating community lists, community lookup, and community timelines
 - Community member lists, joining, join requests, and leaving
+- Chat room lists, single room lookup, and room message history
+- Direct, group, and existing-room message sending with media and shared posts
+- Unread chat room counts
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -231,6 +234,25 @@ val timeline = mixi2.community().getCommunityTimeline(
 
 `joinCommunity(...)` works for `CommunityAccessLevel.PUBLIC` communities;
 `APPROVAL_REQUIRED` ones need `requestJoinCommunity(...)` and an admin approval.
+
+Chat covers both direct and group conversations:
+
+```kotlin
+val rooms = mixi2.chat().getChatRooms(GetChatRoomsRequest(limit = 20)).data.rooms
+
+val messages = mixi2.chat().getChatRoomMessages(
+    GetChatRoomMessagesRequest(roomId = rooms.first().roomId, limit = 50)
+).data.messages
+
+mixi2.chat().sendDirectMessage(
+    SendDirectMessageRequest(receiverId = "PERSONA_ID", text = "hello")
+)
+```
+
+`sendDirectMessage(...)` creates the one-to-one room when it does not exist yet,
+so the room ID has to be read back from the returned message. Use
+`sendMessageToRoom(...)` for a room you already know and
+`sendGroupMessage(...)` to open a group room with several personas.
 
 Notifications can be paged and filtered by activity type:
 

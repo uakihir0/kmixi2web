@@ -338,10 +338,51 @@ and approval-required `1`; approval-required communities need
 unspecified `0`, visible `1`, and invisible `2`. `CommunitySummary.access_level`
 and `CommunitySummary.type` are typed as these enums rather than raw integers.
 
+### Chat
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetChatRooms` | limit, until/since message ID | rooms, has-next flag |
+| `GetChatRoom` | room ID | room |
+| `GetChatRoomMessages` | room ID, limit, until/since message ID | messages, has-next flag |
+| `GetUnreadChatRoomCount` | empty | active, requested, and muted room counts |
+| `SendMessageToRoom` | room ID, text, media IDs | message |
+| `SendDirectMessage` | receiver ID, text, media IDs, post ID | message |
+| `SendGroupMessage` | receiver IDs, text, media IDs | message |
+
+Chat pages by message ID rather than by opaque cursor. `GetChatRoomsRequest`
+uses `limit` (1), `until_message_id` (2), and `since_message_id` (3);
+`GetChatRoomMessagesRequest` shifts them behind `room_id` (1) to `limit` (2),
+`until_message_id` (3), and `since_message_id` (4). Both responses pair their
+list at field 1 with `has_next` (2).
+
+`ChatRoom` uses `room_id` (1), `is_group` (2), `title` (3), `members` (4),
+`created_at` (5), `message` (6), `status` (7), `is_mute` (8), and `is_invisible`
+(9). Field 6 is the latest message, which is what room previews render. A room
+with `is_group` false is one-to-one, and `members` are `ChatRoomMember` records
+of `persona_id` (1) and `read_message_id` (2) — read state is per member, so
+unread detection compares the member's read ID against the room's last message.
+
+`ChatRoomMessage` uses `room_id` (1), `message_id` (2), `persona_id` (3),
+`message_type` (4), `message_target_id` (5), `text` (6), `created_at` (8),
+`media` (9), and `post` (10). Field 7 is unused. `text` is optional because
+media-only and system messages carry none.
+
+`ChatRoomStatus` is unknown `0`, accepted `1`, requested `2`, and requesting `3`
+— requested and requesting distinguish the direction of a pending invitation.
+`ChatRoomMessageType` is message `0` followed by the system events invite `1`,
+join `2`, leave `3`, change-title `4`, and change-icon `5`.
+
+Sending has three entry points. `SendMessageToRoom` needs an existing room,
+`SendDirectMessage` takes a `receiver_id` and creates the one-to-one room when
+it is missing, and `SendGroupMessage` takes repeated `receiver_ids`. All three
+return a `ChatRoomMessage`, which is how the caller learns a newly created room
+ID. Only `SendDirectMessage` accepts a `post_id` (4) for sharing a post.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication, community administration, events, chat,
-and remote-settings RPCs. They can be called with `RawResource` immediately and
+The service also exposes authentication, community administration, events, chat
+room administration, and remote-settings RPCs. They can be called with `RawResource` immediately and
 should be promoted to typed resources only after their field numbers are covered
 by offline wire tests.
 
@@ -352,8 +393,8 @@ Representative method names:
   `ArchiveCommunity`, `ApproveJoinCommunity`, `ExcludeCommunityMember`
 - Events: `CreateEventCommunity`, `GetOngoingEventCommunities`,
   `CloseEventCommunity`
-- Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,
-  `SendGroupMessage`
+- Chat administration: `CreateChatRoom`, `UpdateChatRoomTitle`,
+  `AcceptChatRoom`, `ExitChatRoom`, `MakeChatRoomMute`, `SearchChatRooms`
 - Discovery: `GetRecommendations`
 
 ## Sources used for schema validation

@@ -21,6 +21,7 @@ protobuf RPC interface.
 - `SearchResource`: persona and post search plus typeahead
 - `MediaResource`: upload preparation, binary upload, and status polling
 - `CommunityResource`: community lists, timelines, members, and membership
+- `ChatResource`: chat rooms, message history, and message sending
 - `RawResource`: untyped unary RPC calls
 
 ## Protocol
