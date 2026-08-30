@@ -28,6 +28,27 @@ enum class PostPublishingType {
 
 @Serializable
 @JsExport
+enum class ReportReasonType {
+    UNSPECIFIED,
+    SPAM,
+    DISTURBING_OR_OFFENSIVE_BEHAVIOR,
+    SEXUAL_HARASSMENT_ENCOUNTER,
+    COPYRIGHT_INFRINGEMENT,
+    INVASION_OF_PRIVACY,
+    OTHER,
+    RIGHT_INFRINGEMENT,
+}
+
+@Serializable
+@JsExport
+enum class ReportRightInfringementTarget {
+    UNSPECIFIED,
+    SELF,
+    OTHERS,
+}
+
+@Serializable
+@JsExport
 enum class LanguageCode {
     UNKNOWN,
     JP,
