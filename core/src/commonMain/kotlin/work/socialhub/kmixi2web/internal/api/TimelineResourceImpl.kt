@@ -4,8 +4,10 @@ import work.socialhub.kmixi2web.api.TimelineResource
 import work.socialhub.kmixi2web.api.request.GetFollowingsTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetHashtagTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetPersonalTimelineRequest
+import work.socialhub.kmixi2web.api.request.GetReactionPostsRequest
 import work.socialhub.kmixi2web.api.request.GetRecommendedTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetSubscribingFeedsRequest
+import work.socialhub.kmixi2web.api.response.GetReactionPostsResponse
 import work.socialhub.kmixi2web.api.response.GetSubscribingFeedsResponse
 import work.socialhub.kmixi2web.api.response.GetTimelineResponse
 import work.socialhub.kmixi2web.entity.share.Response
@@ -89,4 +91,19 @@ internal class TimelineResourceImpl(
     override fun getHashtagTimelineBlocking(
         request: GetHashtagTimelineRequest,
     ) = toBlocking { getHashtagTimeline(request) }
+
+    override suspend fun getReactionPosts(
+        request: GetReactionPostsRequest,
+    ): Response<GetReactionPostsResponse> {
+        return client.call(
+            "GetReactionPosts",
+            request,
+            GetReactionPostsRequest.serializer(),
+            GetReactionPostsResponse.serializer(),
+        )
+    }
+
+    override fun getReactionPostsBlocking(
+        request: GetReactionPostsRequest,
+    ) = toBlocking { getReactionPosts(request) }
 }

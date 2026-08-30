@@ -67,3 +67,14 @@ class GetLikingPersonasRequest(
     @ProtoNumber(3)
     var cursor: String? = null,
 )
+
+@Serializable
+@JsExport
+class GetRepostingPersonasRequest(
+    @ProtoNumber(1)
+    var postId: String,
+    @ProtoNumber(2)
+    var limit: Int? = null,
+    @ProtoNumber(3)
+    var cursor: String? = null,
+)

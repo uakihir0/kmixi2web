@@ -3,8 +3,10 @@ package work.socialhub.kmixi2web.api
 import work.socialhub.kmixi2web.api.request.GetFollowingsTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetHashtagTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetPersonalTimelineRequest
+import work.socialhub.kmixi2web.api.request.GetReactionPostsRequest
 import work.socialhub.kmixi2web.api.request.GetRecommendedTimelineRequest
 import work.socialhub.kmixi2web.api.request.GetSubscribingFeedsRequest
+import work.socialhub.kmixi2web.api.response.GetReactionPostsResponse
 import work.socialhub.kmixi2web.api.response.GetSubscribingFeedsResponse
 import work.socialhub.kmixi2web.api.response.GetTimelineResponse
 import work.socialhub.kmixi2web.entity.share.Response
@@ -56,4 +58,13 @@ interface TimelineResource {
     fun getHashtagTimelineBlocking(
         request: GetHashtagTimelineRequest,
     ): Response<GetTimelineResponse>
+
+    suspend fun getReactionPosts(
+        request: GetReactionPostsRequest,
+    ): Response<GetReactionPostsResponse>
+
+    @JsExport.Ignore
+    fun getReactionPostsBlocking(
+        request: GetReactionPostsRequest,
+    ): Response<GetReactionPostsResponse>
 }

@@ -56,3 +56,37 @@ class DeletePostResponse(
     @ProtoNumber(1)
     var deleted: Boolean = false,
 )
+
+@Serializable
+@JsExport
+class CreateBookmarkResponse(
+    @ProtoNumber(1)
+    var post: Post? = null,
+)
+
+@Serializable
+@JsExport
+class DeleteBookmarkResponse(
+    @ProtoNumber(1)
+    var post: Post? = null,
+)
+
+@Serializable
+@JsExport
+class DeleteRepostResponse(
+    @ProtoNumber(1)
+    var deletedPostId: String = "",
+    @ProtoNumber(2)
+    var referencePost: Post? = null,
+)
+
+@Serializable
+@JsExport
+class GetQuotePostsResponse(
+    @ProtoNumber(1)
+    var posts: List<Post> = emptyList(),
+    @ProtoNumber(2)
+    var nextCursor: String = "",
+    @ProtoNumber(3)
+    var hasNext: Boolean = false,
+)

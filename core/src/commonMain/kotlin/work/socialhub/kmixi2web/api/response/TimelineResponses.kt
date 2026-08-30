@@ -21,3 +21,14 @@ class GetTimelineResponse(
     @ProtoNumber(1)
     var posts: List<Post> = emptyList(),
 )
+
+@Serializable
+@JsExport
+class GetReactionPostsResponse(
+    @ProtoNumber(1)
+    var posts: List<Post> = emptyList(),
+    @ProtoNumber(2)
+    var nextCursor: String = "",
+    @ProtoNumber(3)
+    var hasNext: Boolean = false,
+)

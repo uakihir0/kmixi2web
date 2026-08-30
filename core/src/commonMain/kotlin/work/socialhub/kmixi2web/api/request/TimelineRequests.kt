@@ -3,6 +3,7 @@ package work.socialhub.kmixi2web.api.request
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
 import work.socialhub.kmixi2web.entity.FeedSourceType
+import work.socialhub.kmixi2web.entity.PostReactionType
 import kotlin.js.JsExport
 
 @Serializable
@@ -78,4 +79,15 @@ class GetHashtagTimelineRequest(
     var limit: Int? = null,
     @ProtoNumber(6)
     var endCursorId: String? = null,
+)
+
+@Serializable
+@JsExport
+class GetReactionPostsRequest(
+    @ProtoNumber(1)
+    var reactionType: PostReactionType,
+    @ProtoNumber(2)
+    var limit: Int? = null,
+    @ProtoNumber(3)
+    var cursor: String? = null,
 )

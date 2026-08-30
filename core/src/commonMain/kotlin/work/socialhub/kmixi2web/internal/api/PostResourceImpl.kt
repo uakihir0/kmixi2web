@@ -1,17 +1,25 @@
 package work.socialhub.kmixi2web.internal.api
 
 import work.socialhub.kmixi2web.api.PostResource
+import work.socialhub.kmixi2web.api.request.CreateBookmarkRequest
 import work.socialhub.kmixi2web.api.request.CreatePostRequest
+import work.socialhub.kmixi2web.api.request.DeleteBookmarkRequest
 import work.socialhub.kmixi2web.api.request.DeletePostRequest
+import work.socialhub.kmixi2web.api.request.DeleteRepostRequest
 import work.socialhub.kmixi2web.api.request.GetPostRequest
 import work.socialhub.kmixi2web.api.request.GetPostsRequest
+import work.socialhub.kmixi2web.api.request.GetQuotePostsRequest
 import work.socialhub.kmixi2web.api.request.GetRepliesRequest
 import work.socialhub.kmixi2web.api.request.GetReplyAncestorsRequest
 import work.socialhub.kmixi2web.api.request.GetThreadPostsRequest
+import work.socialhub.kmixi2web.api.response.CreateBookmarkResponse
 import work.socialhub.kmixi2web.api.response.CreatePostResponse
+import work.socialhub.kmixi2web.api.response.DeleteBookmarkResponse
 import work.socialhub.kmixi2web.api.response.DeletePostResponse
+import work.socialhub.kmixi2web.api.response.DeleteRepostResponse
 import work.socialhub.kmixi2web.api.response.GetPostResponse
 import work.socialhub.kmixi2web.api.response.GetPostsResponse
+import work.socialhub.kmixi2web.api.response.GetQuotePostsResponse
 import work.socialhub.kmixi2web.api.response.GetRepliesResponse
 import work.socialhub.kmixi2web.api.response.GetReplyAncestorsResponse
 import work.socialhub.kmixi2web.api.response.GetTimelineResponse
@@ -126,4 +134,64 @@ internal class PostResourceImpl(
     override fun deletePostBlocking(
         request: DeletePostRequest,
     ) = toBlocking { deletePost(request) }
+
+    override suspend fun deleteRepost(
+        request: DeleteRepostRequest,
+    ): Response<DeleteRepostResponse> {
+        return client.call(
+            "DeleteRepost",
+            request,
+            DeleteRepostRequest.serializer(),
+            DeleteRepostResponse.serializer(),
+        )
+    }
+
+    override fun deleteRepostBlocking(
+        request: DeleteRepostRequest,
+    ) = toBlocking { deleteRepost(request) }
+
+    override suspend fun getQuotePosts(
+        request: GetQuotePostsRequest,
+    ): Response<GetQuotePostsResponse> {
+        return client.call(
+            "GetQuotePosts",
+            request,
+            GetQuotePostsRequest.serializer(),
+            GetQuotePostsResponse.serializer(),
+        )
+    }
+
+    override fun getQuotePostsBlocking(
+        request: GetQuotePostsRequest,
+    ) = toBlocking { getQuotePosts(request) }
+
+    override suspend fun createBookmark(
+        request: CreateBookmarkRequest,
+    ): Response<CreateBookmarkResponse> {
+        return client.call(
+            "CreateBookmark",
+            request,
+            CreateBookmarkRequest.serializer(),
+            CreateBookmarkResponse.serializer(),
+        )
+    }
+
+    override fun createBookmarkBlocking(
+        request: CreateBookmarkRequest,
+    ) = toBlocking { createBookmark(request) }
+
+    override suspend fun deleteBookmark(
+        request: DeleteBookmarkRequest,
+    ): Response<DeleteBookmarkResponse> {
+        return client.call(
+            "DeleteBookmark",
+            request,
+            DeleteBookmarkRequest.serializer(),
+            DeleteBookmarkResponse.serializer(),
+        )
+    }
+
+    override fun deleteBookmarkBlocking(
+        request: DeleteBookmarkRequest,
+    ) = toBlocking { deleteBookmark(request) }
 }

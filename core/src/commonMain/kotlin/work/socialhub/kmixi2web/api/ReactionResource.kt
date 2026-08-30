@@ -5,6 +5,7 @@ import work.socialhub.kmixi2web.api.request.CreateLikeRequest
 import work.socialhub.kmixi2web.api.request.DeleteLikeRequest
 import work.socialhub.kmixi2web.api.request.GetLikingPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetPostStampReactionsRequest
+import work.socialhub.kmixi2web.api.request.GetRepostingPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetStampsRequest
 import work.socialhub.kmixi2web.api.request.RemoveStampFromPostRequest
 import work.socialhub.kmixi2web.api.response.AddStampToPostResponse
@@ -12,6 +13,7 @@ import work.socialhub.kmixi2web.api.response.CreateLikeResponse
 import work.socialhub.kmixi2web.api.response.DeleteLikeResponse
 import work.socialhub.kmixi2web.api.response.GetLikingPersonasResponse
 import work.socialhub.kmixi2web.api.response.GetPostStampReactionsResponse
+import work.socialhub.kmixi2web.api.response.GetRepostingPersonasResponse
 import work.socialhub.kmixi2web.api.response.GetStampsResponse
 import work.socialhub.kmixi2web.api.response.RemoveStampFromPostResponse
 import work.socialhub.kmixi2web.entity.share.Response
@@ -81,4 +83,13 @@ interface ReactionResource {
     fun getLikingPersonasBlocking(
         request: GetLikingPersonasRequest,
     ): Response<GetLikingPersonasResponse>
+
+    suspend fun getRepostingPersonas(
+        request: GetRepostingPersonasRequest,
+    ): Response<GetRepostingPersonasResponse>
+
+    @JsExport.Ignore
+    fun getRepostingPersonasBlocking(
+        request: GetRepostingPersonasRequest,
+    ): Response<GetRepostingPersonasResponse>
 }

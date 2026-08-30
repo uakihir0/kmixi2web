@@ -71,3 +71,14 @@ class GetLikingPersonasResponse(
     @ProtoNumber(3)
     var hasNext: Boolean = false,
 )
+
+@Serializable
+@JsExport
+class GetRepostingPersonasResponse(
+    @ProtoNumber(1)
+    var personas: List<Persona> = emptyList(),
+    @ProtoNumber(2)
+    var nextCursor: String = "",
+    @ProtoNumber(3)
+    var hasNext: Boolean = false,
+)

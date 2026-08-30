@@ -6,6 +6,7 @@ import work.socialhub.kmixi2web.api.request.CreateLikeRequest
 import work.socialhub.kmixi2web.api.request.DeleteLikeRequest
 import work.socialhub.kmixi2web.api.request.GetLikingPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetPostStampReactionsRequest
+import work.socialhub.kmixi2web.api.request.GetRepostingPersonasRequest
 import work.socialhub.kmixi2web.api.request.GetStampsRequest
 import work.socialhub.kmixi2web.api.request.RemoveStampFromPostRequest
 import work.socialhub.kmixi2web.api.response.AddStampToPostResponse
@@ -13,6 +14,7 @@ import work.socialhub.kmixi2web.api.response.CreateLikeResponse
 import work.socialhub.kmixi2web.api.response.DeleteLikeResponse
 import work.socialhub.kmixi2web.api.response.GetLikingPersonasResponse
 import work.socialhub.kmixi2web.api.response.GetPostStampReactionsResponse
+import work.socialhub.kmixi2web.api.response.GetRepostingPersonasResponse
 import work.socialhub.kmixi2web.api.response.GetStampsResponse
 import work.socialhub.kmixi2web.api.response.RemoveStampFromPostResponse
 import work.socialhub.kmixi2web.entity.share.Response
@@ -126,4 +128,19 @@ internal class ReactionResourceImpl(
     override fun getLikingPersonasBlocking(
         request: GetLikingPersonasRequest,
     ) = toBlocking { getLikingPersonas(request) }
+
+    override suspend fun getRepostingPersonas(
+        request: GetRepostingPersonasRequest,
+    ): Response<GetRepostingPersonasResponse> {
+        return client.call(
+            "GetRepostingPersonas",
+            request,
+            GetRepostingPersonasRequest.serializer(),
+            GetRepostingPersonasResponse.serializer(),
+        )
+    }
+
+    override fun getRepostingPersonasBlocking(
+        request: GetRepostingPersonasRequest,
+    ) = toBlocking { getRepostingPersonas(request) }
 }

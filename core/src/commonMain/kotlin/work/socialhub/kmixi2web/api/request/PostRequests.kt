@@ -92,3 +92,35 @@ class DeletePostRequest(
     @ProtoNumber(1)
     var postId: String,
 )
+
+@Serializable
+@JsExport
+class CreateBookmarkRequest(
+    @ProtoNumber(1)
+    var postId: String,
+)
+
+@Serializable
+@JsExport
+class DeleteBookmarkRequest(
+    @ProtoNumber(1)
+    var postId: String,
+)
+
+@Serializable
+@JsExport
+class DeleteRepostRequest(
+    @ProtoNumber(1)
+    var referencePostId: String,
+)
+
+@Serializable
+@JsExport
+class GetQuotePostsRequest(
+    @ProtoNumber(1)
+    var postId: String,
+    @ProtoNumber(2)
+    var limit: Int? = null,
+    @ProtoNumber(3)
+    var cursor: String? = null,
+)
