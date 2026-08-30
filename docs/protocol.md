@@ -155,11 +155,39 @@ Timeline posts contain `persona_id`; clients can batch those IDs through
 at field 1 and `is_shared_persona` at field 2. This is the only observed way to
 resolve the authenticated persona; the `x-auth-key` header does not name it.
 
+### Social graph
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetFollowings` | cursor ID, limit, persona ID | followings and next cursor |
+| `GetFollowers` | cursor ID, limit, persona ID | followers and next cursor |
+| `CreateFollowing` | following ID | created following |
+| `DeleteFollowing` | following ID | deleted following |
+| `SendFollowingRequest` | persona ID | target persona |
+| `CancelFollowingRequest` | persona ID | target persona |
+| `ApproveFollowingRequest` | request ID | empty |
+| `RejectFollowingRequest` | request ID | empty |
+| `GetFollowingRequests` | repeated request IDs | repeated following requests |
+| `GetPendingFollowingRequests` | optional cursor | following requests and next cursor |
+
+`GetFollowingsRequest` and `GetFollowersRequest` share `cursor_id` (1), `limit`
+(2), and `persona_id` (3); omitting `persona_id` reads the active persona.
+Responses carry the list at field 1 and `cursor_id` at field 2. An empty
+`cursor_id` marks the end of the list.
+
+`Following` and `Follower` have the same layout: `persona_id` (1), `created_at`
+(2), `persona` (3), and `persona_connectivity` (4). `PersonaConnectivity` is the
+same message returned inside `Profile`, so a single list read already reports
+mutual follow state.
+
+`FollowingRequest` carries `request_id` (1), `sender_id` (2), `receiver_id` (3),
+`created_at` (4), and `status` (5). Follow requests apply only to personas that
+approve followers manually; `CreateFollowing` fails for them.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication, follows, bookmarks,
-communities/events, chat, media upload preparation, search, profile,
-moderation, and remote-settings RPCs. They can be called with `RawResource`
+The service also exposes authentication, bookmarks, communities/events, chat,
+media upload preparation, search, moderation, and remote-settings RPCs. They can be called with `RawResource`
 immediately and should be promoted to typed resources only after their field
 numbers are covered by offline wire tests.
 
@@ -167,8 +195,6 @@ Representative method names:
 
 - Session: `Signin`, `SignOut`, `RefreshToken`
 - Engagement: `CreateBookmark`, `DeleteBookmark`
-- Social graph: `GetFollowers`, `GetFollowings`, `CreateFollowing`,
-  `DeleteFollowing`
 - Communities: `GetCommunity`, `GetCommunityTimeline`, `CreateCommunity`,
   `JoinCommunity`, `LeaveCommunity`
 - Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,

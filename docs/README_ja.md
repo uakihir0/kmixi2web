@@ -20,6 +20,9 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - ペルソナの切り替え
 - ペルソナ ID・名前によるプロフィール取得 (フォロー数、ミュート・ブロック状態を含む)
 - 表示名、プロフィール文、ステータス、リンクの更新
+- フォロー中・フォロワー一覧の取得 (カーソルページング)
+- フォロー・フォロー解除、承認制ペルソナへのフォローリクエスト送信と取り消し
+- 受信したフォローリクエストの一覧取得と承認・拒否
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -78,6 +81,25 @@ println(active?.profile?.followingCount)
 `persona().getProfile(...)` と `persona().getProfileByName(...)` は任意のペルソナの
 `Profile` を返し、フォロー数、`isMuted`、`isBlocking`、`personaConnectivity` を含みます。
 `persona().updateProfile(...)` は値が設定されたフィールドのみを更新します。
+
+フォローグラフは `cursorId` によるページングで取得します。
+
+```kotlin
+val followings = mixi2.follow().getFollowings(
+    GetFollowingsRequest(personaId = "PERSONA_ID", limit = 50)
+).data
+
+followings.followings.forEach { println(it.persona?.name) }
+
+val next = mixi2.follow().getFollowings(
+    GetFollowingsRequest(personaId = "PERSONA_ID", cursorId = followings.cursorId)
+)
+```
+
+`createFollowing(...)` と `deleteFollowing(...)` はフォロー状態を直接変更します。
+承認制のペルソナには `sendFollowingRequest(...)` を使用し、
+受信側は `getPendingFollowingRequests(...)` で一覧を取得して
+`approveFollowingRequest(...)` または `rejectFollowingRequest(...)` を呼び出します。
 
 通知はページングと activity type による絞り込みに対応しています。
 

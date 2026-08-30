@@ -24,6 +24,9 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Persona switching
 - Profile lookup by persona ID or name, including follow counts and moderation state
 - Profile updates for display name, profile text, status, and link
+- Following and follower lists with cursor paging
+- Follow and unfollow, plus follow requests for protected personas
+- Approving, rejecting, and listing pending follow requests
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -97,6 +100,26 @@ println(active?.profile?.followingCount)
 `Profile` for any persona, including follow counts, `isMuted`, `isBlocking`, and
 `personaConnectivity`. `persona().updateProfile(...)` applies only the fields
 that are set.
+
+The follow graph is paged with an opaque cursor:
+
+```kotlin
+val followings = mixi2.follow().getFollowings(
+    GetFollowingsRequest(personaId = "PERSONA_ID", limit = 50)
+).data
+
+followings.followings.forEach { println(it.persona?.name) }
+
+val next = mixi2.follow().getFollowings(
+    GetFollowingsRequest(personaId = "PERSONA_ID", cursorId = followings.cursorId)
+)
+```
+
+`createFollowing(...)` and `deleteFollowing(...)` change the follow state
+directly. A persona that approves followers manually needs
+`sendFollowingRequest(...)` instead, and the receiving side uses
+`getPendingFollowingRequests(...)` with `approveFollowingRequest(...)` or
+`rejectFollowingRequest(...)`.
 
 Notifications can be paged and filtered by activity type:
 
