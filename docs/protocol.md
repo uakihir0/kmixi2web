@@ -240,17 +240,42 @@ field 1 and `next_cursor` at field 2, and personas arrive as
 `SearchTypeaheadItem` carries `item_type` (1) and `persona` (2); persona is
 currently the only item type.
 
+### Post engagement
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `CreateBookmark` | post ID | updated post |
+| `DeleteBookmark` | post ID | updated post |
+| `DeleteRepost` | reference post ID | deleted post ID and reference post |
+| `GetQuotePosts` | post ID, limit, cursor | posts, next cursor, has-next flag |
+| `GetReactionPosts` | reaction type, limit, cursor | posts, next cursor, has-next flag |
+| `GetRepostingPersonas` | post ID, limit, cursor | personas, next cursor, has-next flag |
+
+Bookmark requests use `post_id` at field 1 and return the updated `Post`.
+`DeleteRepostRequest` instead takes `reference_post_id` — the reposted post, not
+the repost itself — and the response returns `deleted_post_id` (1) with the
+`reference_post` (2).
+
+The three paged lookups share `post_id`/`reaction_type` (1), `limit` (2), and
+`cursor` (3), and their responses share the list at field 1, `next_cursor` (2),
+and `has_next` (3).
+
+`GetReactionPosts` reads back the active persona's own reactions.
+`PostReactionType` values are non-contiguous: unknown `0`, reply `100`, repost
+`101`, quote `102`, like `200`, and bookmark `201`. The client uses the same
+custom-serializer approach as notification activity types, so like encodes as
+varint `0xC8 0x01` rather than a Kotlin enum ordinal.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication, bookmarks, communities/events, chat,
-media upload preparation, and remote-settings RPCs. They can be called with `RawResource`
+The service also exposes authentication, communities/events, chat, media upload
+preparation, and remote-settings RPCs. They can be called with `RawResource`
 immediately and should be promoted to typed resources only after their field
 numbers are covered by offline wire tests.
 
 Representative method names:
 
 - Session: `Signin`, `SignOut`, `RefreshToken`
-- Engagement: `CreateBookmark`, `DeleteBookmark`
 - Communities: `GetCommunity`, `GetCommunityTimeline`, `CreateCommunity`,
   `JoinCommunity`, `LeaveCommunity`
 - Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,

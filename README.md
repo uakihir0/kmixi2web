@@ -30,6 +30,9 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Blocking, muting, and their blocked/muted persona ID lists
 - Reporting posts and personas with a reason type
 - Post and persona search, including typeahead suggestions
+- Bookmark creation and removal, and repost removal
+- Quote post and reposting persona lookup
+- Liked and bookmarked post timelines
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -167,6 +170,26 @@ println(posts?.nextCursor)
 
 Pass a previous `nextCursor` back as `untilCursor` to page. `searchTypeahead(...)`
 returns persona suggestions for an incremental input.
+
+Bookmarks and reposts are edited through `post()`, and the active persona's own
+reactions are read back as a timeline:
+
+```kotlin
+mixi2.post().createBookmark(CreateBookmarkRequest("POST_ID"))
+mixi2.post().deleteRepost(DeleteRepostRequest("POST_ID"))
+
+val bookmarked = mixi2.timeline().getReactionPosts(
+    GetReactionPostsRequest(reactionType = PostReactionType.BOOKMARK, limit = 50)
+)
+
+val quotes = mixi2.post().getQuotePosts(GetQuotePostsRequest("POST_ID"))
+val reposters = mixi2.reaction().getRepostingPersonas(
+    GetRepostingPersonasRequest("POST_ID")
+)
+```
+
+`getReactionPosts(...)` also reads liked posts with `PostReactionType.LIKE`.
+`deleteRepost(...)` takes the reposted post ID, not the repost's own ID.
 
 Notifications can be paged and filtered by activity type:
 

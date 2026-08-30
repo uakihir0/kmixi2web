@@ -26,6 +26,9 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - ブロック・ミュートの設定解除と、ブロック中・ミュート中ペルソナ ID 一覧の取得
 - ポスト・ペルソナの通報 (通報理由の指定)
 - ポスト・ペルソナ検索とタイプアヘッド候補の取得
+- ブックマークの追加・削除、リポストの取り消し
+- 引用ポスト一覧、リポストしたペルソナ一覧の取得
+- いいね・ブックマークしたポストの一覧取得
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -146,6 +149,26 @@ val personas = results.results.first { it.operationId == 2 }.personasResult
 
 続きを取得する場合は、取得済みの `nextCursor` を `untilCursor` に指定します。
 `searchTypeahead(...)` は入力途中のペルソナ候補を返します。
+
+ブックマークとリポストの取り消しは `post()`、自分のリアクション一覧は
+タイムラインとして取得します。
+
+```kotlin
+mixi2.post().createBookmark(CreateBookmarkRequest("POST_ID"))
+mixi2.post().deleteRepost(DeleteRepostRequest("POST_ID"))
+
+val bookmarked = mixi2.timeline().getReactionPosts(
+    GetReactionPostsRequest(reactionType = PostReactionType.BOOKMARK, limit = 50)
+)
+
+val quotes = mixi2.post().getQuotePosts(GetQuotePostsRequest("POST_ID"))
+val reposters = mixi2.reaction().getRepostingPersonas(
+    GetRepostingPersonasRequest("POST_ID")
+)
+```
+
+`PostReactionType.LIKE` を指定するといいねしたポストを取得できます。
+`deleteRepost(...)` にはリポスト自身の ID ではなく、リポスト元のポスト ID を指定します。
 
 通知はページングと activity type による絞り込みに対応しています。
 
