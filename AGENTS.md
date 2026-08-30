@@ -10,11 +10,16 @@ protobuf RPC interface.
 - `core/`: typed MercuryService client and protobuf models
 - `all/`: aggregate CocoaPods, XCFramework, Swift Package, and JS distribution
 - `Mixi2WebFactory`: creates direct-cookie or browser-proxy clients
-- `TimelineResource`: feed and timeline reads
-- `PostResource`: post reads, creation, replies, quotes, and deletion
-- `PersonaResource`: persona lookup
+- `SessionResource`: signed-in session and persona switching
+- `TimelineResource`: feed, timeline, and reaction-post reads
+- `PostResource`: post reads, creation, replies, quotes, bookmarks, and deletion
+- `PersonaResource`: persona lookup and profile reads and updates
+- `FollowResource`: followings, followers, and follow requests
 - `ReactionResource`: likes, stamps, reaction counts, and reaction personas
 - `NotificationResource`: notifications, unread counts, and read markers
+- `ModerationResource`: blocks, mutes, and reports
+- `SearchResource`: persona and post search plus typeahead
+- `MediaResource`: upload preparation, binary upload, and status polling
 - `RawResource`: untyped unary RPC calls
 
 ## Protocol
