@@ -33,6 +33,7 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Bookmark creation and removal, and repost removal
 - Quote post and reposting persona lookup
 - Liked and bookmarked post timelines
+- Media upload preparation, binary upload, and processing status polling
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -190,6 +191,29 @@ val reposters = mixi2.reaction().getRepostingPersonas(
 
 `getReactionPosts(...)` also reads liked posts with `PostReactionType.LIKE`.
 `deleteRepost(...)` takes the reposted post ID, not the repost's own ID.
+
+Media is uploaded before the post that references it. `uploadMedia(...)` runs the
+whole sequence — prepare, upload the bytes to the returned presigned target, and
+poll until processing finishes:
+
+```kotlin
+val uploaded = mixi2.media().uploadMedia(
+    UploadMediaRequest(
+        mimeType = "image/jpeg",
+        data = imageBytes,
+        category = MediaCategory.POST_IMAGE,
+    )
+).data
+
+mixi2.post().createPost(
+    CreatePostRequest(text = "with an image", mediaIds = listOf(uploaded.mediaId))
+)
+```
+
+`prepareMediaUploading(...)` and `getMedia(...)` are also exposed for callers that
+want to drive the upload themselves. Videos stay in `MediaStatus.IN_PROGRESS`
+while the service transcodes them, so `pollAttempts` and `pollIntervalMillis`
+bound how long `uploadMedia(...)` waits.
 
 Notifications can be paged and filtered by activity type:
 

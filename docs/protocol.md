@@ -266,12 +266,41 @@ and `has_next` (3).
 custom-serializer approach as notification activity types, so like encodes as
 varint `0xC8 0x01` rather than a Kotlin enum ordinal.
 
+### Media
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `PrepareMediaUploading` | mime type, data size, category, community ID, description | media ID and upload target |
+| `GetMedia` | media ID | media with its processing status |
+
+`PrepareMediaUploadingRequest` uses `mime_type` (1), `data_size` (2), `category`
+(3), `community_id` (4), and `description` (5). `data_size` is the exact byte
+length of the payload; the service issues the upload target against it.
+
+The response carries `media_id` (1) and `request` (2), a `MediaUploadTarget` with
+`url` (1), `method` (2), and repeated `headers` (3) of `MediaUploadHeader`
+(`key` 1, `value` 2). That URL is a presigned storage endpoint, so the bytes are
+sent there with the listed headers and **without** the Mercury authentication
+headers. A blank `method` is treated as `PUT`.
+
+Upload completion is asynchronous: `GetMedia` is polled until `status` leaves the
+uploading and processing states. Videos in particular stay in progress while the
+service transcodes them.
+
+`MediaCategory` is contiguous: unknown `0`, avatar `1`, post image `2`, post
+video `3`, community cover image `4`, community stamp `5`. `MediaStatus` is also
+contiguous: unknown `0`, wait-for-uploading `1`, in-progress `2`, success `3`,
+failure `4`. `Media.category` and `Media.status` are typed as these enums rather
+than raw integers.
+
+`GetStorageRateLimit` reports the remaining upload quota and is not modelled yet.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication, communities/events, chat, media upload
-preparation, and remote-settings RPCs. They can be called with `RawResource`
-immediately and should be promoted to typed resources only after their field
-numbers are covered by offline wire tests.
+The service also exposes authentication, communities/events, chat, and
+remote-settings RPCs. They can be called with `RawResource` immediately and
+should be promoted to typed resources only after their field numbers are covered
+by offline wire tests.
 
 Representative method names:
 
@@ -281,7 +310,6 @@ Representative method names:
 - Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,
   `SendGroupMessage`
 - Discovery: `GetRecommendations`
-- Media: `PrepareMediaUploading`, `GetMedia`, `GetStorageRateLimit`
 
 ## Sources used for schema validation
 

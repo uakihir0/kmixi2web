@@ -29,6 +29,7 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - ブックマークの追加・削除、リポストの取り消し
 - 引用ポスト一覧、リポストしたペルソナ一覧の取得
 - いいね・ブックマークしたポストの一覧取得
+- メディアのアップロード準備・バイナリ送信・処理状態のポーリング
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -169,6 +170,27 @@ val reposters = mixi2.reaction().getRepostingPersonas(
 
 `PostReactionType.LIKE` を指定するといいねしたポストを取得できます。
 `deleteRepost(...)` にはリポスト自身の ID ではなく、リポスト元のポスト ID を指定します。
+
+メディアは投稿より先にアップロードします。`uploadMedia(...)` は準備、
+presigned URL へのバイナリ送信、処理完了までのポーリングをまとめて実行します。
+
+```kotlin
+val uploaded = mixi2.media().uploadMedia(
+    UploadMediaRequest(
+        mimeType = "image/jpeg",
+        data = imageBytes,
+        category = MediaCategory.POST_IMAGE,
+    )
+).data
+
+mixi2.post().createPost(
+    CreatePostRequest(text = "画像付き投稿", mediaIds = listOf(uploaded.mediaId))
+)
+```
+
+自分でアップロード手順を制御する場合は `prepareMediaUploading(...)` と
+`getMedia(...)` を直接使用します。動画は変換中 `MediaStatus.IN_PROGRESS` の
+ままになるため、待機時間は `pollAttempts` と `pollIntervalMillis` で調整します。
 
 通知はページングと activity type による絞り込みに対応しています。
 
