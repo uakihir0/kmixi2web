@@ -211,10 +211,39 @@ infringement `7`, and the infringement target is unspecified `0`, self `1`, or
 others `2`. Field 4 applies only to right-infringement reports and is omitted
 otherwise.
 
+### Search
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `Search` | query, repeated search operations | repeated search results |
+| `SearchTypeahead` | query | repeated typeahead items |
+
+`SearchRequest` holds `query` (1) and `operations` (2). One call can mix
+operations of different types; each `SearchOperation` carries `type` (1),
+`operation_id` (2), `until_cursor` (3), `since_cursor` (4), `limit` (5),
+`end_cursor` (6), `media_attached_only` (7), `start_time_after` (8),
+`end_time_after` (9), `persona_option` (10), `post_option` (11), and
+`event_option` (12).
+
+`SearchType` starts at personas `0`, then posts `1`, communities `2`, topic `3`,
+and event `4`. Because personas is the zero value it is omitted from the encoded
+request, which the service reads as a persona search.
+
+`SearchResult` repeats `operation_id` (1) so results can be matched back to the
+requested operation, and carries `personas_result` (2), `posts_result` (3), and
+`communities_result` (4). The library models the persona and post results; the
+community result is left to `RawResource` until the `Community` message is
+covered by wire tests. `PersonasResult` and `PostsResult` both use the list at
+field 1 and `next_cursor` at field 2, and personas arrive as
+`PersonaWithConnectivity` so follow state needs no extra call.
+
+`SearchTypeaheadItem` carries `item_type` (1) and `persona` (2); persona is
+currently the only item type.
+
 ## Other observed MercuryService groups
 
 The service also exposes authentication, bookmarks, communities/events, chat,
-media upload preparation, search, and remote-settings RPCs. They can be called with `RawResource`
+media upload preparation, and remote-settings RPCs. They can be called with `RawResource`
 immediately and should be promoted to typed resources only after their field
 numbers are covered by offline wire tests.
 
@@ -226,7 +255,7 @@ Representative method names:
   `JoinCommunity`, `LeaveCommunity`
 - Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,
   `SendGroupMessage`
-- Discovery: `Search`, `SearchTypeahead`, `GetRecommendations`
+- Discovery: `GetRecommendations`
 - Media: `PrepareMediaUploading`, `GetMedia`, `GetStorageRateLimit`
 
 ## Sources used for schema validation

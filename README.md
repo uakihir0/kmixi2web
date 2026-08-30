@@ -29,6 +29,7 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Approving, rejecting, and listing pending follow requests
 - Blocking, muting, and their blocked/muted persona ID lists
 - Reporting posts and personas with a reason type
+- Post and persona search, including typeahead suggestions
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -143,6 +144,29 @@ mixi2.moderation().reportPost(
 `getBlockPersonas()` and `getMutePersonas()` return persona IDs only; resolve
 them with `persona().getPersonas(...)`. `blockPersona(...)` returns the updated
 `Profile`, so `isBlocking` can be read back without a second call.
+
+One search call can carry several independent operations, each identified by an
+`operationId` that the matching result repeats:
+
+```kotlin
+val results = mixi2.search().search(
+    SearchRequest(
+        query = "kotlin",
+        operations = listOf(
+            SearchOperation(type = SearchType.POSTS, operationId = 1, limit = 20),
+            SearchOperation(type = SearchType.PERSONAS, operationId = 2, limit = 20),
+        ),
+    )
+).data
+
+val posts = results.results.first { it.operationId == 1 }.postsResult
+val personas = results.results.first { it.operationId == 2 }.personasResult
+
+println(posts?.nextCursor)
+```
+
+Pass a previous `nextCursor` back as `untilCursor` to page. `searchTypeahead(...)`
+returns persona suggestions for an incremental input.
 
 Notifications can be paged and filtered by activity type:
 

@@ -25,6 +25,7 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - 受信したフォローリクエストの一覧取得と承認・拒否
 - ブロック・ミュートの設定解除と、ブロック中・ミュート中ペルソナ ID 一覧の取得
 - ポスト・ペルソナの通報 (通報理由の指定)
+- ポスト・ペルソナ検索とタイプアヘッド候補の取得
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -124,6 +125,27 @@ mixi2.moderation().reportPost(
 必要に応じて `persona().getPersonas(...)` で解決します。
 `blockPersona(...)` は更新後の `Profile` を返すので、`isBlocking` を
 再取得せずに確認できます。
+
+検索は 1 回のリクエストに複数の operation を含められます。
+結果は `operationId` で対応付けます。
+
+```kotlin
+val results = mixi2.search().search(
+    SearchRequest(
+        query = "kotlin",
+        operations = listOf(
+            SearchOperation(type = SearchType.POSTS, operationId = 1, limit = 20),
+            SearchOperation(type = SearchType.PERSONAS, operationId = 2, limit = 20),
+        ),
+    )
+).data
+
+val posts = results.results.first { it.operationId == 1 }.postsResult
+val personas = results.results.first { it.operationId == 2 }.personasResult
+```
+
+続きを取得する場合は、取得済みの `nextCursor` を `untilCursor` に指定します。
+`searchTypeahead(...)` は入力途中のペルソナ候補を返します。
 
 通知はページングと activity type による絞り込みに対応しています。
 
