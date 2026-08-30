@@ -293,8 +293,27 @@ KMIXI2WEB_POST_ID=自分のポストID \
 KMIXI2WEB_LIVE_MODE=notification-read \
   ./gradlew :core:jvmTest \
   --tests work.socialhub.kmixi2web.NotificationLiveTest.readNotificationsAndBadgeCounts
+
+KMIXI2WEB_LIVE_MODE=graph-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.GraphLiveTest.readFollowingsAndFollowers
+
+KMIXI2WEB_LIVE_MODE=search-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.GraphLiveTest.searchPersonasAndPosts
+
+KMIXI2WEB_LIVE_MODE=community-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.CommunityLiveTest.readCommunitiesTimelineAndMembers
+
+KMIXI2WEB_LIVE_MODE=chat-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.ChatLiveTest.readChatRoomsAndMessages
 ```
 
 書き込みテストには、実行中のペルソナがまだいいね・stamp を付けていない自分の
 ポストを指定します。両方を追加して取得結果を確認した後に解除し、元の件数へ
 戻ったことまで検証します。
+
+`reaction-write` 以外のモードはすべて読み取り専用です。コミュニティ・チャット
+ルーム・検索結果が存在しない場合は失敗せずにスキップします。

@@ -347,11 +347,31 @@ KMIXI2WEB_POST_ID=YOUR_OWN_POST_ID \
 KMIXI2WEB_LIVE_MODE=notification-read \
   ./gradlew :core:jvmTest \
   --tests work.socialhub.kmixi2web.NotificationLiveTest.readNotificationsAndBadgeCounts
+
+KMIXI2WEB_LIVE_MODE=graph-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.GraphLiveTest.readFollowingsAndFollowers
+
+KMIXI2WEB_LIVE_MODE=search-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.GraphLiveTest.searchPersonasAndPosts
+
+KMIXI2WEB_LIVE_MODE=community-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.CommunityLiveTest.readCommunitiesTimelineAndMembers
+
+KMIXI2WEB_LIVE_MODE=chat-read \
+  ./gradlew :core:jvmTest \
+  --tests work.socialhub.kmixi2web.ChatLiveTest.readChatRoomsAndMessages
 ```
 
 The write test requires a post you own without an existing like or stamp from
 the active persona. It adds and then removes both reactions and verifies that
 the original counts are restored.
+
+Every mode above except `reaction-write` is read-only. The read-only modes skip
+themselves rather than fail when the account has nothing to read — no community,
+no chat room, or no search hit.
 
 ## License
 
