@@ -28,6 +28,27 @@ enum class PostPublishingType {
 
 @Serializable
 @JsExport
+enum class MediaCategory {
+    UNKNOWN,
+    AVATAR,
+    POST_IMAGE,
+    POST_VIDEO,
+    COMMUNITY_COVER_IMAGE,
+    COMMUNITY_STAMP,
+}
+
+@Serializable
+@JsExport
+enum class MediaStatus {
+    UNKNOWN,
+    WAIT_FOR_UPLOADING,
+    IN_PROGRESS,
+    SUCCESS,
+    FAILURE,
+}
+
+@Serializable
+@JsExport
 enum class SearchType {
     PERSONAS,
     POSTS,

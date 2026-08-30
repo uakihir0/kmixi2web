@@ -81,9 +81,9 @@ class Media(
     @ProtoNumber(1)
     var mediaId: String = "",
     @ProtoNumber(3)
-    var category: Int = 0,
+    var category: MediaCategory = MediaCategory.UNKNOWN,
     @ProtoNumber(4)
-    var status: Int = 0,
+    var status: MediaStatus = MediaStatus.UNKNOWN,
     @ProtoNumber(5)
     var avatar: Avatar? = null,
     @ProtoNumber(6)
@@ -92,4 +92,24 @@ class Media(
     var postVideo: PostVideo? = null,
     @ProtoNumber(9)
     var description: String? = null,
+)
+
+@Serializable
+@JsExport
+class MediaUploadTarget(
+    @ProtoNumber(1)
+    var url: String = "",
+    @ProtoNumber(2)
+    var method: String = "",
+    @ProtoNumber(3)
+    var headers: List<MediaUploadHeader> = emptyList(),
+)
+
+@Serializable
+@JsExport
+class MediaUploadHeader(
+    @ProtoNumber(1)
+    var key: String = "",
+    @ProtoNumber(2)
+    var value: String = "",
 )

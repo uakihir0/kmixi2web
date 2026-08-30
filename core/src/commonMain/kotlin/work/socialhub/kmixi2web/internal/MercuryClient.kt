@@ -7,8 +7,10 @@ import io.ktor.client.plugins.timeout
 import io.ktor.client.request.accept
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.request
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.protobuf.ProtoBuf
 import work.socialhub.kmixi2web.Mixi2WebConfig
@@ -75,6 +77,51 @@ internal class MercuryClient(
         }
 
         return Response(result.body, result.status, result.body)
+    }
+
+    /**
+     * Sends raw bytes to an upload target returned by `PrepareMediaUploading`.
+     * The target is a presigned storage URL, so the Mercury authentication
+     * headers are deliberately not attached.
+     */
+    suspend fun upload(
+        url: String,
+        method: String,
+        headers: Map<String, String>,
+        body: ByteArray,
+    ): Int {
+        val client = HttpClient {
+            expectSuccess = false
+            install(HttpTimeout)
+        }
+        val status = try {
+            val response = client.request(url) {
+                this.method = HttpMethod.parse(method.ifBlank { "PUT" })
+                headers.forEach { (key, value) -> header(key, value) }
+                timeout {
+                    requestTimeoutMillis = config.requestTimeoutMillis
+                    connectTimeoutMillis = config.connectTimeoutMillis
+                    socketTimeoutMillis = config.socketTimeoutMillis
+                }
+                setBody(body)
+            }
+            response.status.value
+        } catch (e: Exception) {
+            throw Mixi2WebException(
+                message = "Media upload failed: ${e.message}",
+                cause = e,
+            )
+        } finally {
+            client.close()
+        }
+
+        if (status !in 200..299) {
+            throw Mixi2WebException(
+                message = "Media upload failed: HTTP $status",
+                status = status,
+            )
+        }
+        return status
     }
 
     private suspend fun execute(

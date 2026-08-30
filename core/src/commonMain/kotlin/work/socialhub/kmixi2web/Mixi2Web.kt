@@ -1,6 +1,7 @@
 package work.socialhub.kmixi2web
 
 import work.socialhub.kmixi2web.api.FollowResource
+import work.socialhub.kmixi2web.api.MediaResource
 import work.socialhub.kmixi2web.api.ModerationResource
 import work.socialhub.kmixi2web.api.NotificationResource
 import work.socialhub.kmixi2web.api.PersonaResource
@@ -23,6 +24,7 @@ interface Mixi2Web {
     fun notification(): NotificationResource
     fun moderation(): ModerationResource
     fun search(): SearchResource
+    fun media(): MediaResource
     fun raw(): RawResource
 
     companion object {
