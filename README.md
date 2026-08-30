@@ -27,6 +27,8 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Following and follower lists with cursor paging
 - Follow and unfollow, plus follow requests for protected personas
 - Approving, rejecting, and listing pending follow requests
+- Blocking, muting, and their blocked/muted persona ID lists
+- Reporting posts and personas with a reason type
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -120,6 +122,27 @@ directly. A persona that approves followers manually needs
 `sendFollowingRequest(...)` instead, and the receiving side uses
 `getPendingFollowingRequests(...)` with `approveFollowingRequest(...)` or
 `rejectFollowingRequest(...)`.
+
+Blocking, muting, and reporting live on `moderation()`:
+
+```kotlin
+mixi2.moderation().blockPersona(MakePersonaBlockRequest("PERSONA_ID"))
+mixi2.moderation().mutePersona(MakePersonaMuteRequest("PERSONA_ID"))
+
+val blocked = mixi2.moderation().getBlockPersonas().data.personaIds
+
+mixi2.moderation().reportPost(
+    ReportPostRequest(
+        postId = "POST_ID",
+        reasonType = ReportReasonType.SPAM,
+        reasonContent = "reason",
+    )
+)
+```
+
+`getBlockPersonas()` and `getMutePersonas()` return persona IDs only; resolve
+them with `persona().getPersonas(...)`. `blockPersona(...)` returns the updated
+`Profile`, so `isBlocking` can be read back without a second call.
 
 Notifications can be paged and filtered by activity type:
 

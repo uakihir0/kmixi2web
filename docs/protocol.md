@@ -184,10 +184,37 @@ mutual follow state.
 `created_at` (4), and `status` (5). Follow requests apply only to personas that
 approve followers manually; `CreateFollowing` fails for them.
 
+### Moderation
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `MakePersonaBlock` | persona ID | updated profile |
+| `MakePersonaUnblock` | persona ID | updated profile |
+| `MakePersonaMute` | persona ID | updated persona |
+| `MakePersonaUnmute` | persona ID | updated persona |
+| `GetBlockPersonas` | empty | repeated persona IDs |
+| `GetMutePersonas` | empty | repeated persona IDs |
+| `ReportPost` | post ID, reason type, reason content, optional right infringement target | reported post |
+| `ReportPersona` | persona ID, reason type, reason content, optional right infringement target | reported persona |
+
+Block and mute requests carry `persona_id` at field 1. Block responses return a
+`Profile`, so `is_muted` (8), `is_blocking` (10), and `is_blocked` (11) can be
+read back from the mutation itself; mute responses return a bare `Persona`.
+
+`GetBlockPersonas` and `GetMutePersonas` take an empty request and return only
+persona IDs at field 1, so the IDs still need `GetPersonas` to be displayed.
+
+Report requests use `post_id`/`persona_id` (1), `reason_type` (2),
+`reason_content` (3), and `right_infringement_target` (4). Both enums are
+contiguous: reason types run from unspecified `0` through spam `1` to right
+infringement `7`, and the infringement target is unspecified `0`, self `1`, or
+others `2`. Field 4 applies only to right-infringement reports and is omitted
+otherwise.
+
 ## Other observed MercuryService groups
 
 The service also exposes authentication, bookmarks, communities/events, chat,
-media upload preparation, search, moderation, and remote-settings RPCs. They can be called with `RawResource`
+media upload preparation, search, and remote-settings RPCs. They can be called with `RawResource`
 immediately and should be promoted to typed resources only after their field
 numbers are covered by offline wire tests.
 

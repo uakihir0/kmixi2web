@@ -23,6 +23,8 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - フォロー中・フォロワー一覧の取得 (カーソルページング)
 - フォロー・フォロー解除、承認制ペルソナへのフォローリクエスト送信と取り消し
 - 受信したフォローリクエストの一覧取得と承認・拒否
+- ブロック・ミュートの設定解除と、ブロック中・ミュート中ペルソナ ID 一覧の取得
+- ポスト・ペルソナの通報 (通報理由の指定)
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -100,6 +102,28 @@ val next = mixi2.follow().getFollowings(
 承認制のペルソナには `sendFollowingRequest(...)` を使用し、
 受信側は `getPendingFollowingRequests(...)` で一覧を取得して
 `approveFollowingRequest(...)` または `rejectFollowingRequest(...)` を呼び出します。
+
+ブロック・ミュート・通報は `moderation()` から呼び出します。
+
+```kotlin
+mixi2.moderation().blockPersona(MakePersonaBlockRequest("PERSONA_ID"))
+mixi2.moderation().mutePersona(MakePersonaMuteRequest("PERSONA_ID"))
+
+val blocked = mixi2.moderation().getBlockPersonas().data.personaIds
+
+mixi2.moderation().reportPost(
+    ReportPostRequest(
+        postId = "POST_ID",
+        reasonType = ReportReasonType.SPAM,
+        reasonContent = "通報理由",
+    )
+)
+```
+
+`getBlockPersonas()` と `getMutePersonas()` はペルソナ ID のみを返すため、
+必要に応じて `persona().getPersonas(...)` で解決します。
+`blockPersona(...)` は更新後の `Profile` を返すので、`isBlocking` を
+再取得せずに確認できます。
 
 通知はページングと activity type による絞り込みに対応しています。
 
