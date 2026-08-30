@@ -3,6 +3,7 @@ package work.socialhub.kmixi2web.internal
 import work.socialhub.kmixi2web.Mixi2Web
 import work.socialhub.kmixi2web.Mixi2WebConfig
 import work.socialhub.kmixi2web.api.FollowResource
+import work.socialhub.kmixi2web.api.CommunityResource
 import work.socialhub.kmixi2web.api.MediaResource
 import work.socialhub.kmixi2web.api.ModerationResource
 import work.socialhub.kmixi2web.api.NotificationResource
@@ -14,6 +15,7 @@ import work.socialhub.kmixi2web.api.SearchResource
 import work.socialhub.kmixi2web.api.SessionResource
 import work.socialhub.kmixi2web.api.TimelineResource
 import work.socialhub.kmixi2web.internal.api.FollowResourceImpl
+import work.socialhub.kmixi2web.internal.api.CommunityResourceImpl
 import work.socialhub.kmixi2web.internal.api.MediaResourceImpl
 import work.socialhub.kmixi2web.internal.api.ModerationResourceImpl
 import work.socialhub.kmixi2web.internal.api.NotificationResourceImpl
@@ -39,6 +41,7 @@ internal class Mixi2WebImpl(
     private val moderation = ModerationResourceImpl(client)
     private val search = SearchResourceImpl(client)
     private val media = MediaResourceImpl(client)
+    private val community = CommunityResourceImpl(client)
     private val raw = RawResourceImpl(client)
 
     override fun session(): SessionResource = session
@@ -51,5 +54,6 @@ internal class Mixi2WebImpl(
     override fun moderation(): ModerationResource = moderation
     override fun search(): SearchResource = search
     override fun media(): MediaResource = media
+    override fun community(): CommunityResource = community
     override fun raw(): RawResource = raw
 }

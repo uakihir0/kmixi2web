@@ -80,6 +80,28 @@ enum class ReportRightInfringementTarget {
 
 @Serializable
 @JsExport
+enum class CommunityType {
+    TOPIC,
+    EVENT,
+}
+
+@Serializable
+@JsExport
+enum class CommunityAccessLevel {
+    PUBLIC,
+    APPROVAL_REQUIRED,
+}
+
+@Serializable
+@JsExport
+enum class CommunityVisibility {
+    UNSPECIFIED,
+    VISIBLE,
+    INVISIBLE,
+}
+
+@Serializable
+@JsExport
 enum class LanguageCode {
     UNKNOWN,
     JP,
