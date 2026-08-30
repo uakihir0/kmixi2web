@@ -7,6 +7,7 @@ import work.socialhub.kmixi2web.api.PersonaResource
 import work.socialhub.kmixi2web.api.PostResource
 import work.socialhub.kmixi2web.api.RawResource
 import work.socialhub.kmixi2web.api.ReactionResource
+import work.socialhub.kmixi2web.api.SearchResource
 import work.socialhub.kmixi2web.api.SessionResource
 import work.socialhub.kmixi2web.api.TimelineResource
 import kotlin.js.JsExport
@@ -21,6 +22,7 @@ interface Mixi2Web {
     fun reaction(): ReactionResource
     fun notification(): NotificationResource
     fun moderation(): ModerationResource
+    fun search(): SearchResource
     fun raw(): RawResource
 
     companion object {

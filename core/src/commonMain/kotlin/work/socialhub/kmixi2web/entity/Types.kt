@@ -28,6 +28,16 @@ enum class PostPublishingType {
 
 @Serializable
 @JsExport
+enum class SearchType {
+    PERSONAS,
+    POSTS,
+    COMMUNITIES,
+    TOPIC,
+    EVENT,
+}
+
+@Serializable
+@JsExport
 enum class ReportReasonType {
     UNSPECIFIED,
     SPAM,
