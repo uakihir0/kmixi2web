@@ -1,5 +1,6 @@
 package work.socialhub.kmixi2web
 
+import work.socialhub.kmixi2web.api.FollowResource
 import work.socialhub.kmixi2web.api.NotificationResource
 import work.socialhub.kmixi2web.api.PersonaResource
 import work.socialhub.kmixi2web.api.PostResource
@@ -15,6 +16,7 @@ interface Mixi2Web {
     fun timeline(): TimelineResource
     fun post(): PostResource
     fun persona(): PersonaResource
+    fun follow(): FollowResource
     fun reaction(): ReactionResource
     fun notification(): NotificationResource
     fun raw(): RawResource
