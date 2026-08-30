@@ -20,6 +20,7 @@ protobuf RPC interface.
 - `ModerationResource`: blocks, mutes, and reports
 - `SearchResource`: persona and post search plus typeahead
 - `MediaResource`: upload preparation, binary upload, and status polling
+- `CommunityResource`: community lists, timelines, members, and membership
 - `RawResource`: untyped unary RPC calls
 
 ## Protocol

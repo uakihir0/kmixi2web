@@ -30,6 +30,8 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - 引用ポスト一覧、リポストしたペルソナ一覧の取得
 - いいね・ブックマークしたポストの一覧取得
 - メディアのアップロード準備・バイナリ送信・処理状態のポーリング
+- 参加コミュニティ一覧・コミュニティ取得・コミュニティタイムライン
+- コミュニティメンバー一覧・参加・参加申請・退会
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -191,6 +193,23 @@ mixi2.post().createPost(
 自分でアップロード手順を制御する場合は `prepareMediaUploading(...)` と
 `getMedia(...)` を直接使用します。動画は変換中 `MediaStatus.IN_PROGRESS` の
 ままになるため、待機時間は `pollAttempts` と `pollIntervalMillis` で調整します。
+
+コミュニティは mixi2 のグループ機能で、トピックコミュニティとイベント
+コミュニティの両方を扱います。
+
+```kotlin
+val communities = mixi2.community().getParticipatingCommunities(
+    GetParticipatingCommunitiesRequest(rejectArchived = true)
+).data.communities
+
+val timeline = mixi2.community().getCommunityTimeline(
+    GetCommunityTimelineRequest(communityId = communities.first().communityId)
+).data.posts
+```
+
+`joinCommunity(...)` は `CommunityAccessLevel.PUBLIC` のコミュニティで使用します。
+`APPROVAL_REQUIRED` の場合は `requestJoinCommunity(...)` で申請し、管理者の承認が
+必要です。
 
 通知はページングと activity type による絞り込みに対応しています。
 

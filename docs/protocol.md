@@ -295,18 +295,63 @@ than raw integers.
 
 `GetStorageRateLimit` reports the remaining upload quota and is not modelled yet.
 
+### Communities
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetParticipatingCommunities` | persona ID, type, limit, cursor, admin-only, reject-archived | communities, next cursor |
+| `GetCommunity` | community ID | community |
+| `GetCommunities` | community IDs | communities |
+| `GetCommunityTimeline` | community ID, cursors, limit, media-only | `GetTimelineResponse` |
+| `GetParticipatingCommunityMembers` | community ID, limit, cursor | members, cursor |
+| `JoinCommunity` | community ID, skip-blocking-check | community |
+| `RequestJoinCommunity` | community ID, skip-blocking-check | community |
+| `LeaveCommunity` | community ID | left child community IDs |
+
+`GetParticipatingCommunitiesRequest` uses `persona_id` (1), `type` (2), `limit`
+(3), `cursor` (4), `is_admin_only` (5), and `reject_archived` (6); every field is
+optional and the signed-in persona is used when `persona_id` is omitted. The
+response pairs `communities` (1) with `next_cursor` (2), while
+`GetParticipatingCommunityMembersResponse` names its cursor `cursor` (2).
+
+`GetCommunityTimeline` reuses the shared `GetTimelineResponse`, so its request
+carries the paging fields itself: `community_id` (1), `until_cursor_id` (2),
+`since_cursor_id` (3), `limit` (4), `end_cursor_id` (5), and `media_only` (6).
+
+`Community` is a 29-field message; the client models `community_id` (1), `name`
+(2), `purpose` (3), `access_level` (4), `admins` (5), `myself` (7),
+`count_of_members` (8), `created_at` (9), `is_archived` (10), `cover_image` (11),
+`members` (12), `type` (13), `parent` (14), `children` (15), `tags` (20),
+`visibility` (21), `creator_id` (22), and `creator` (23). Event schedules (16),
+post pins (17), purpose-editor bookkeeping (18, 19), and the posting and
+subscription flags (24–29) are skipped, which protobuf tolerates.
+
+`CommunityMember` uses `community_id` (1), `persona` (2), `status` (3),
+`is_admin` (4), `is_creator` (5), `created_at` (6), and `persona_id` (7).
+`CommunityMemberStatus` skips `2`: participating `0`, waiting-for-approval `1`,
+excluded `3`. Like post reaction types it is serialized by code, so excluded
+encodes as varint `3` rather than the ordinal `2`.
+
+`CommunityType` is topic `0` and event `1`. `CommunityAccessLevel` is public `0`
+and approval-required `1`; approval-required communities need
+`RequestJoinCommunity` instead of `JoinCommunity`. `CommunityVisibility` is
+unspecified `0`, visible `1`, and invisible `2`. `CommunitySummary.access_level`
+and `CommunitySummary.type` are typed as these enums rather than raw integers.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication, communities/events, chat, and
-remote-settings RPCs. They can be called with `RawResource` immediately and
+The service also exposes authentication, community administration, events, chat,
+and remote-settings RPCs. They can be called with `RawResource` immediately and
 should be promoted to typed resources only after their field numbers are covered
 by offline wire tests.
 
 Representative method names:
 
 - Session: `Signin`, `SignOut`, `RefreshToken`
-- Communities: `GetCommunity`, `GetCommunityTimeline`, `CreateCommunity`,
-  `JoinCommunity`, `LeaveCommunity`
+- Community administration: `CreateCommunity`, `UpdateCommunity`,
+  `ArchiveCommunity`, `ApproveJoinCommunity`, `ExcludeCommunityMember`
+- Events: `CreateEventCommunity`, `GetOngoingEventCommunities`,
+  `CloseEventCommunity`
 - Chat: `GetChatRooms`, `GetChatRoomMessages`, `SendDirectMessage`,
   `SendGroupMessage`
 - Discovery: `GetRecommendations`

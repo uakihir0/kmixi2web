@@ -34,6 +34,8 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Quote post and reposting persona lookup
 - Liked and bookmarked post timelines
 - Media upload preparation, binary upload, and processing status polling
+- Participating community lists, community lookup, and community timelines
+- Community member lists, joining, join requests, and leaving
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -214,6 +216,21 @@ mixi2.post().createPost(
 want to drive the upload themselves. Videos stay in `MediaStatus.IN_PROGRESS`
 while the service transcodes them, so `pollAttempts` and `pollIntervalMillis`
 bound how long `uploadMedia(...)` waits.
+
+Communities are mixi2's groups, and they back both topic and event communities:
+
+```kotlin
+val communities = mixi2.community().getParticipatingCommunities(
+    GetParticipatingCommunitiesRequest(rejectArchived = true)
+).data.communities
+
+val timeline = mixi2.community().getCommunityTimeline(
+    GetCommunityTimelineRequest(communityId = communities.first().communityId)
+).data.posts
+```
+
+`joinCommunity(...)` works for `CommunityAccessLevel.PUBLIC` communities;
+`APPROVAL_REQUIRED` ones need `requestJoinCommunity(...)` and an admin approval.
 
 Notifications can be paged and filtered by activity type:
 
