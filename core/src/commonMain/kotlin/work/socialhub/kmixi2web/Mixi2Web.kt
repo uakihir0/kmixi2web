@@ -5,11 +5,13 @@ import work.socialhub.kmixi2web.api.PersonaResource
 import work.socialhub.kmixi2web.api.PostResource
 import work.socialhub.kmixi2web.api.RawResource
 import work.socialhub.kmixi2web.api.ReactionResource
+import work.socialhub.kmixi2web.api.SessionResource
 import work.socialhub.kmixi2web.api.TimelineResource
 import kotlin.js.JsExport
 
 @JsExport
 interface Mixi2Web {
+    fun session(): SessionResource
     fun timeline(): TimelineResource
     fun post(): PostResource
     fun persona(): PersonaResource
