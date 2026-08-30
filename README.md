@@ -20,6 +20,10 @@ projects and supports JVM, JavaScript, iOS, and macOS.
 - Notifications, activity filtering, and unread badge counts
 - Individual and time-based notification read markers
 - Persona lookup by ID or name
+- Session lookup for the authenticated account and its managed personas
+- Persona switching
+- Profile lookup by persona ID or name, including follow counts and moderation state
+- Profile updates for display name, profile text, status, and link
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 
 ## Authentication
@@ -77,6 +81,22 @@ val reactions = mixi2.reaction().getPostStampReactions(
 `reaction().getStamps(...)` returns the available stamp catalog, including
 stamp IDs and image URLs. `getLikingPersonas(...)` is restricted by the mixi2
 service to the post owner.
+
+The authenticated account and its personas come from the session:
+
+```kotlin
+val session = mixi2.session().getSession().data
+val active = session.sessionManagedPersonas
+    .firstOrNull { it.profile?.persona?.personaId == session.activePersonaId }
+
+println(active?.profile?.persona?.name)
+println(active?.profile?.followingCount)
+```
+
+`persona().getProfile(...)` and `persona().getProfileByName(...)` return the same
+`Profile` for any persona, including follow counts, `isMuted`, `isBlocking`, and
+`personaConnectivity`. `persona().updateProfile(...)` applies only the fields
+that are set.
 
 Notifications can be paged and filtered by activity type:
 

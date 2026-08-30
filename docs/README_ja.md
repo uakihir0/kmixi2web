@@ -16,6 +16,10 @@ mixi2 Web が利用している非公式 protobuf RPC を Kotlin Multiplatform �
 - 通知一覧、種類絞り込み、未読バッジ数の取得
 - 通知の個別既読・指定時点以前の一括既読
 - ID・ユーザー名によるペルソナ取得
+- 認証済みアカウントのセッションと管理ペルソナ一覧の取得
+- ペルソナの切り替え
+- ペルソナ ID・名前によるプロフィール取得 (フォロー数、ミュート・ブロック状態を含む)
+- 表示名、プロフィール文、ステータス、リンクの更新
 - 未型定義 RPC を呼び出す raw unary API
 
 ## 認証
@@ -59,6 +63,21 @@ val reactions = mixi2.reaction().getPostStampReactions(
 `reaction().getStamps(...)` では、stamp ID と画像 URL を含む利用可能な
 stamp カタログを取得できます。`getLikingPersonas(...)` は mixi2 側の制約により、
 そのポストの投稿者だけが呼び出せます。
+
+認証済みアカウントとそのペルソナはセッションから取得します。
+
+```kotlin
+val session = mixi2.session().getSession().data
+val active = session.sessionManagedPersonas
+    .firstOrNull { it.profile?.persona?.personaId == session.activePersonaId }
+
+println(active?.profile?.persona?.name)
+println(active?.profile?.followingCount)
+```
+
+`persona().getProfile(...)` と `persona().getProfileByName(...)` は任意のペルソナの
+`Profile` を返し、フォロー数、`isMuted`、`isBlocking`、`personaConnectivity` を含みます。
+`persona().updateProfile(...)` は値が設定されたフィールドのみを更新します。
 
 通知はページングと activity type による絞り込みに対応しています。
 

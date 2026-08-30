@@ -130,13 +130,34 @@ The client uses a custom serializer so values such as reply `204`, mention
 | --- | --- | --- |
 | `GetPersonas` | repeated persona IDs | repeated personas |
 | `GetPersonaByName` | persona name | one persona |
+| `GetProfile` | persona ID | one profile |
+| `GetProfileByName` | persona name | one profile |
+| `UpdateProfile` | optional display name, profile text, status icon, status text, link | updated profile |
 
 Timeline posts contain `persona_id`; clients can batch those IDs through
 `GetPersonas`.
 
+`Profile` wraps a `Persona` at field 1 and adds `following_count` (2),
+`followed_count` (3), `text` (4), `profile_image_url` (5), `link` (6),
+`persona_connectivity` (7), `is_muted` (8), `post_pins` (9), `is_blocking` (10),
+`is_blocked` (11), `is_post_notification_target` (12), and `social_media` (13).
+`UpdateProfileRequest` fields are all optional; unset fields are left unchanged.
+
+### Session
+
+| RPC | Request | Response |
+| --- | --- | --- |
+| `GetSession` | empty | managed personas, active persona ID, frozen flag |
+| `SwitchPersona` | persona ID | empty |
+
+`SessionResponse` carries `session_managed_personas` (1), `active_persona_id`
+(2), and `is_account_frozen` (3). Each `SessionManagedPersona` holds a `Profile`
+at field 1 and `is_shared_persona` at field 2. This is the only observed way to
+resolve the authenticated persona; the `x-auth-key` header does not name it.
+
 ## Other observed MercuryService groups
 
-The service also exposes authentication/session, follows, bookmarks,
+The service also exposes authentication, follows, bookmarks,
 communities/events, chat, media upload preparation, search, profile,
 moderation, and remote-settings RPCs. They can be called with `RawResource`
 immediately and should be promoted to typed resources only after their field
@@ -144,7 +165,7 @@ numbers are covered by offline wire tests.
 
 Representative method names:
 
-- Session: `Signin`, `SignOut`, `GetSession`, `RefreshToken`, `SwitchPersona`
+- Session: `Signin`, `SignOut`, `RefreshToken`
 - Engagement: `CreateBookmark`, `DeleteBookmark`
 - Social graph: `GetFollowers`, `GetFollowings`, `CreateFollowing`,
   `DeleteFollowing`
