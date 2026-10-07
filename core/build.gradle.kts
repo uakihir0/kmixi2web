@@ -48,7 +48,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.ktor.core)
             implementation(libs.coroutines.core)
-            implementation(libs.serialization.protobuf)
+            api(libs.serialization.protobuf)
         }
 
         jvmMain.dependencies {
