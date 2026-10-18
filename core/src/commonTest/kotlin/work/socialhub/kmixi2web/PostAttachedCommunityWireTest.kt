@@ -28,4 +28,18 @@ class PostAttachedCommunityWireTest {
         assertEquals("n", post?.attachedCommunity?.name)
         assertEquals(4L, post?.attachedCommunity?.countOfMembers)
     }
+
+    @Test
+    fun postWithoutAttachedCommunityHasNoAttachedCommunity() {
+        val decoded = wireProto.decodeFromByteArray(
+            GetPostResponse.serializer(),
+            bytes(
+                0x0A, 0x03,
+                0x0A, 0x01, 0x70,
+            ),
+        )
+
+        assertEquals("p", decoded.post?.postId)
+        assertNull(decoded.post?.attachedCommunity)
+    }
 }

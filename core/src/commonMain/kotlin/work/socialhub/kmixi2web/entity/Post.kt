@@ -82,8 +82,9 @@ class Post(
     /**
      * Community shared by this post (a "community share" post created with
      * [work.socialhub.kmixi2web.api.request.CreatePostRequest.attachedCommunityId]).
-     * The server sends the full [Community] (name, purpose, cover image,
-     * member count, member previews and the reader's own membership).
+     * The server may include a nested [Community] with the fields modeled
+     * here (name, purpose, cover image, member count, member previews and the
+     * reader's own membership); fields not modeled by [Community] are skipped.
      */
     @ProtoNumber(26)
     var attachedCommunity: Community? = null,
