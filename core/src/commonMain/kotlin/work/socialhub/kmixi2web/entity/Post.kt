@@ -97,15 +97,16 @@ class Post(
     @ProtoNumber(34)
     var publishingType: Int = 0,
     /**
-     * Original posting date of an imported post (the web client shows it as
-     * "<date> memories"). Only the calendar date is provided, not the time.
-     * Null for posts created on mixi2.
+     * Calendar date carried by some posts, such as the original posting date
+     * of a post imported from an X archive (the web client shows it as
+     * "<date> memories"). Only the date is provided, not the time of day.
+     * Null when the post has no such date.
      */
     @ProtoNumber(38)
     var date: CalendarDate? = null,
     /**
-     * Raw [PostImportSource] value. 0 (UNSPECIFIED) for posts created on
-     * mixi2, 1 (X_ARCHIVE) for posts imported from an X archive.
+     * Raw [PostImportSource] value. 0 (UNSPECIFIED) when the post was not
+     * imported, 1 (X_ARCHIVE) for a post imported from an X archive.
      */
     @ProtoNumber(42)
     var importSource: Int = 0,

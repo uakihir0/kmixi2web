@@ -1,7 +1,6 @@
 package work.socialhub.kmixi2web
 
 import work.socialhub.kmixi2web.api.response.GetPostResponse
-import work.socialhub.kmixi2web.entity.PostImportSource
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -27,7 +26,7 @@ class PostImportedDateWireTest {
         assertEquals(2023, post?.date?.year)
         assertEquals(5, post?.date?.month)
         assertEquals(19, post?.date?.day)
-        assertEquals(PostImportSource.X_ARCHIVE.ordinal, post?.importSource)
+        assertEquals(1, post?.importSource)
     }
 
     @Test
@@ -43,6 +42,21 @@ class PostImportedDateWireTest {
         val post = decoded.post
         assertEquals("p", post?.postId)
         assertNull(post?.date)
-        assertEquals(PostImportSource.UNSPECIFIED.ordinal, post?.importSource)
+        assertEquals(0, post?.importSource)
+    }
+
+    @Test
+    fun postDecodesUnknownImportSourceAsRawValue() {
+        val decoded = wireProto.decodeFromByteArray(
+            GetPostResponse.serializer(),
+            bytes(
+                0x0A, 0x06,
+                0x0A, 0x01, 0x70,
+                0xD0, 0x02, 0x02,
+            ),
+        )
+
+        assertEquals("p", decoded.post?.postId)
+        assertEquals(2, decoded.post?.importSource)
     }
 }
