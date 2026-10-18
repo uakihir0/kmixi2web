@@ -134,3 +134,15 @@ enum class LanguageCode {
     JP,
     EN,
 }
+
+/**
+ * Origin of an imported post (`com.mixi.mercury.constants.post.PostImportSource`).
+ * [work.socialhub.kmixi2web.entity.Post.importSource] carries the raw value.
+ */
+@Serializable
+@JsExport
+enum class PostImportSource {
+    UNSPECIFIED,
+    /** Imported from an X (Twitter) archive. */
+    X_ARCHIVE,
+}

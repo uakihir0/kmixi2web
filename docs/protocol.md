@@ -78,10 +78,20 @@ hashtag timelines add `hashtag` at field 1 and `media_only` at field 2.
 | `mask_caption` | 11 | optional string |
 | `publishing_type` | 12 | optional enum |
 
-`Post` currently has fields 1 through 34. The library models the stable reading
+`Post` currently has fields 1 through 44. The library models the stable reading
 surface including IDs, timestamps, text, counts, media, reply/repost/quote
-references, reactions, links, mentions, decorations, and mask state. Unknown
-fields are skipped by protobuf decoding.
+references, reactions, links, mentions, decorations, mask state, and the
+date/import metadata below. Fields that are not modeled are skipped by
+protobuf decoding.
+
+Some posts carry a calendar date — for example the original posting date of a
+post imported from an X archive. The web client renders an imported post as
+"<date> memories · Imported from X".
+
+| Field | Number | Type |
+| --- | --- | --- |
+| `date` | 38 | optional `google.type.Date` (year, month, day; no time of day) |
+| `import_source` | 42 | enum `PostImportSource` (0 `UNSPECIFIED`, 1 `X_ARCHIVE`) |
 
 ### Reactions
 

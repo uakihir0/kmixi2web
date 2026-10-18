@@ -105,4 +105,18 @@ class Post(
     var maskCaption: String? = null,
     @ProtoNumber(34)
     var publishingType: Int = 0,
+    /**
+     * Calendar date carried by some posts, such as the original posting date
+     * of a post imported from an X archive (the web client shows it as
+     * "<date> memories"). Only the date is provided, not the time of day.
+     * Null when the post has no such date.
+     */
+    @ProtoNumber(38)
+    var date: CalendarDate? = null,
+    /**
+     * Raw [PostImportSource] value. 0 (UNSPECIFIED) when the post was not
+     * imported, 1 (X_ARCHIVE) for a post imported from an X archive.
+     */
+    @ProtoNumber(42)
+    var importSource: Int = 0,
 )
