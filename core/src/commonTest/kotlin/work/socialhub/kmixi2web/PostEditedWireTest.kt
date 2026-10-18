@@ -3,8 +3,6 @@ package work.socialhub.kmixi2web
 import work.socialhub.kmixi2web.api.response.GetPostResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class PostEditedWireTest {
 
@@ -22,7 +20,7 @@ class PostEditedWireTest {
 
         val post = decoded.post
         assertEquals("p", post?.postId)
-        assertTrue(post?.isEdited == true)
+        assertEquals(true, post?.isEdited)
     }
 
     @Test
@@ -37,6 +35,6 @@ class PostEditedWireTest {
 
         val post = decoded.post
         assertEquals("p", post?.postId)
-        assertFalse(post?.isEdited == true)
+        assertEquals(false, post?.isEdited)
     }
 }
