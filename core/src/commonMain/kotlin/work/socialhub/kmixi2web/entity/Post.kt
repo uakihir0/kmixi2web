@@ -106,6 +106,13 @@ class Post(
     @ProtoNumber(34)
     var publishingType: Int = 0,
     /**
+     * True if the post has been edited after it was created. The web client
+     * shows an "edited" (pencil) icon in the post header. The edit time and
+     * edit history are not provided.
+     */
+    @ProtoNumber(36)
+    var isEdited: Boolean = false,
+    /**
      * Calendar date carried by some posts, such as the original posting date
      * of a post imported from an X archive (the web client shows it as
      * "<date> memories"). Only the date is provided, not the time of day.

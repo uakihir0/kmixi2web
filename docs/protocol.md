@@ -80,9 +80,13 @@ hashtag timelines add `hashtag` at field 1 and `media_only` at field 2.
 
 `Post` currently has fields 1 through 44. The library models the stable reading
 surface including IDs, timestamps, text, counts, media, reply/repost/quote
-references, reactions, links, mentions, decorations, mask state, and the
-date/import metadata below. Fields that are not modeled are skipped by
-protobuf decoding.
+references, reactions, links, mentions, decorations, mask state, the edited
+flag, and the date/import metadata below. Fields that are not modeled are
+skipped by protobuf decoding.
+
+`is_edited` (36, bool) is true when the post has been edited. The web client
+shows a pencil icon titled "編集済み" (edited) in the post header. The edit time
+and edit history are not part of `Post`.
 
 Some posts carry a calendar date — for example the original posting date of a
 post imported from an X archive. The web client renders an imported post as
