@@ -24,6 +24,12 @@ enum class PostMaskType {
 enum class PostPublishingType {
     UNSPECIFIED,
     FOLLOW_AND_COMMUNITY,
+
+    /**
+     * Publishes the post only to the author's profile. The web API encodes
+     * this as ordinal 2; the official API names the same option
+     * `POST_PUBLISHING_TYPE_NOT_PUBLISHING` and numbers it 1.
+     */
     NOT_PUBLISHING,
 }
 

@@ -105,6 +105,26 @@ class ProtoWireTest {
     }
 
     @Test
+    fun createPostRequestKeepsFollowAndCommunityPublishingType() {
+        val encoded = proto.encodeToByteArray(
+            CreatePostRequest.serializer(),
+            CreatePostRequest(
+                text = "hi",
+                publishingType = PostPublishingType.FOLLOW_AND_COMMUNITY,
+            ),
+        )
+
+        // field 12 (publishingType) varint = 1 (existing ordinal must stay stable)
+        assertContentEquals(
+            bytes(
+                0x0A, 0x02, 0x68, 0x69,
+                0x60, 0x01,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
     fun postResponseIgnoresUnknownFields() {
         val decoded = proto.decodeFromByteArray(
             GetPostResponse.serializer(),
