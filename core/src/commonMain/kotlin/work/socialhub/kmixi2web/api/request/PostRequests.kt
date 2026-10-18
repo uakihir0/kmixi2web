@@ -124,3 +124,13 @@ class GetQuotePostsRequest(
     @ProtoNumber(3)
     var cursor: String? = null,
 )
+
+@Serializable
+@JsExport
+class VotePollRequest(
+    @ProtoNumber(1)
+    var postId: String,
+    /** [work.socialhub.kmixi2web.entity.PollOption.index] of the chosen option. */
+    @ProtoNumber(2)
+    var optionIndex: Int,
+)

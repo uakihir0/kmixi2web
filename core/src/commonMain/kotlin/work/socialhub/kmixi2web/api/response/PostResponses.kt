@@ -2,6 +2,7 @@ package work.socialhub.kmixi2web.api.response
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoNumber
+import work.socialhub.kmixi2web.entity.Poll
 import work.socialhub.kmixi2web.entity.Post
 import kotlin.js.JsExport
 
@@ -89,4 +90,12 @@ class GetQuotePostsResponse(
     var nextCursor: String = "",
     @ProtoNumber(3)
     var hasNext: Boolean = false,
+)
+
+@Serializable
+@JsExport
+class VotePollResponse(
+    /** The poll after the vote, with the results visible to the voter. */
+    @ProtoNumber(1)
+    var poll: Poll? = null,
 )

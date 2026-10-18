@@ -121,6 +121,12 @@ class Post(
     @ProtoNumber(38)
     var date: CalendarDate? = null,
     /**
+     * Poll attached to this post. Vote with
+     * [work.socialhub.kmixi2web.api.PostResource.votePoll].
+     */
+    @ProtoNumber(40)
+    var poll: Poll? = null,
+    /**
      * Raw [PostImportSource] value. 0 (UNSPECIFIED) when the post was not
      * imported, 1 (X_ARCHIVE) for a post imported from an X archive.
      */

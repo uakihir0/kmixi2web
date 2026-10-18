@@ -11,6 +11,7 @@ import work.socialhub.kmixi2web.api.request.GetQuotePostsRequest
 import work.socialhub.kmixi2web.api.request.GetRepliesRequest
 import work.socialhub.kmixi2web.api.request.GetReplyAncestorsRequest
 import work.socialhub.kmixi2web.api.request.GetThreadPostsRequest
+import work.socialhub.kmixi2web.api.request.VotePollRequest
 import work.socialhub.kmixi2web.api.response.CreateBookmarkResponse
 import work.socialhub.kmixi2web.api.response.CreatePostResponse
 import work.socialhub.kmixi2web.api.response.DeleteBookmarkResponse
@@ -22,6 +23,7 @@ import work.socialhub.kmixi2web.api.response.GetQuotePostsResponse
 import work.socialhub.kmixi2web.api.response.GetRepliesResponse
 import work.socialhub.kmixi2web.api.response.GetReplyAncestorsResponse
 import work.socialhub.kmixi2web.api.response.GetTimelineResponse
+import work.socialhub.kmixi2web.api.response.VotePollResponse
 import work.socialhub.kmixi2web.entity.share.Response
 import kotlin.js.JsExport
 
@@ -105,4 +107,13 @@ interface PostResource {
     fun deleteBookmarkBlocking(
         request: DeleteBookmarkRequest,
     ): Response<DeleteBookmarkResponse>
+
+    /**
+     * Votes for one option of the poll attached to a post. The response
+     * carries the updated poll.
+     */
+    suspend fun votePoll(request: VotePollRequest): Response<VotePollResponse>
+
+    @JsExport.Ignore
+    fun votePollBlocking(request: VotePollRequest): Response<VotePollResponse>
 }

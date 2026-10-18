@@ -112,6 +112,18 @@ Bookmarks and reposts are edited through the same resource with
 `createBookmark(...)`, `deleteBookmark(...)`, and `deleteRepost(...)`.
 `deleteRepost(...)` takes the reposted post ID, not the repost's own ID.
 
+A post with a poll carries it in `Post.poll`. Vote with `votePoll(...)`, which
+returns the updated poll:
+
+```kotlin
+mixi2.post().votePoll(
+    VotePollRequest(postId = "POST_ID", optionIndex = 0)
+)
+```
+
+`optionIndex` is the chosen option's `PollOption.index`, not its position in
+the list.
+
 ### Reactions
 
 Reaction summaries are included in each `Post`:
@@ -342,6 +354,7 @@ available.
 - Blocking, muting, their persona ID lists, and post/persona reporting
 - Post and persona search, including typeahead suggestions
 - Bookmark creation and removal, repost removal, and quote/repost persona lookup
+- Poll display and voting
 - Liked and bookmarked post timelines
 - Media upload preparation, binary upload, and processing status polling
 - Participating community lists, community lookup, and community timelines

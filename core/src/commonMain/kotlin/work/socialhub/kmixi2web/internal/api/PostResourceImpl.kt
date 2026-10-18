@@ -12,6 +12,7 @@ import work.socialhub.kmixi2web.api.request.GetQuotePostsRequest
 import work.socialhub.kmixi2web.api.request.GetRepliesRequest
 import work.socialhub.kmixi2web.api.request.GetReplyAncestorsRequest
 import work.socialhub.kmixi2web.api.request.GetThreadPostsRequest
+import work.socialhub.kmixi2web.api.request.VotePollRequest
 import work.socialhub.kmixi2web.api.response.CreateBookmarkResponse
 import work.socialhub.kmixi2web.api.response.CreatePostResponse
 import work.socialhub.kmixi2web.api.response.DeleteBookmarkResponse
@@ -23,6 +24,7 @@ import work.socialhub.kmixi2web.api.response.GetQuotePostsResponse
 import work.socialhub.kmixi2web.api.response.GetRepliesResponse
 import work.socialhub.kmixi2web.api.response.GetReplyAncestorsResponse
 import work.socialhub.kmixi2web.api.response.GetTimelineResponse
+import work.socialhub.kmixi2web.api.response.VotePollResponse
 import work.socialhub.kmixi2web.entity.share.Response
 import work.socialhub.kmixi2web.internal.MercuryClient
 import work.socialhub.kmixi2web.util.toBlocking
@@ -194,4 +196,19 @@ internal class PostResourceImpl(
     override fun deleteBookmarkBlocking(
         request: DeleteBookmarkRequest,
     ) = toBlocking { deleteBookmark(request) }
+
+    override suspend fun votePoll(
+        request: VotePollRequest,
+    ): Response<VotePollResponse> {
+        return client.call(
+            "VotePoll",
+            request,
+            VotePollRequest.serializer(),
+            VotePollResponse.serializer(),
+        )
+    }
+
+    override fun votePollBlocking(
+        request: VotePollRequest,
+    ) = toBlocking { votePoll(request) }
 }
