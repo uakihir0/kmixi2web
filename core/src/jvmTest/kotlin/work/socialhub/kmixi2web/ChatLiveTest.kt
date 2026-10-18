@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import work.socialhub.kmixi2web.api.request.GetChatRoomMessagesRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomsRequest
+import work.socialhub.kmixi2web.api.request.GetRequestedChatRoomsRequest
 import work.socialhub.kmixi2web.api.request.GetUnreadChatRoomCountRequest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,6 +29,15 @@ class ChatLiveTest {
             assertTrue(room.roomId.isNotBlank())
             room.members.forEach { assertTrue(it.personaId.isNotBlank()) }
         }
+
+        val requested = client.chat().getRequestedChatRooms(
+            GetRequestedChatRoomsRequest(limit = PAGE_SIZE)
+        )
+        assertEquals(200, requested.status)
+        requested.data.rooms.forEach { room ->
+            assertTrue(room.roomId.isNotBlank())
+        }
+        println("Read ${requested.data.rooms.size} requested room(s).")
 
         val first = rooms.data.rooms.firstOrNull()
         if (first == null) {

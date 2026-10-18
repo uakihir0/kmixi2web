@@ -1,12 +1,16 @@
 package work.socialhub.kmixi2web
 
+import work.socialhub.kmixi2web.api.request.AcceptChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomMessagesRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomsRequest
+import work.socialhub.kmixi2web.api.request.GetRequestedChatRoomsRequest
 import work.socialhub.kmixi2web.api.request.SendDirectMessageRequest
 import work.socialhub.kmixi2web.api.request.SendGroupMessageRequest
 import work.socialhub.kmixi2web.api.request.SendMessageToRoomRequest
+import work.socialhub.kmixi2web.api.response.AcceptChatRoomResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomMessagesResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomsResponse
+import work.socialhub.kmixi2web.api.response.GetRequestedChatRoomsResponse
 import work.socialhub.kmixi2web.api.response.GetUnreadChatRoomCountResponse
 import work.socialhub.kmixi2web.entity.ChatRoomMessageType
 import work.socialhub.kmixi2web.entity.ChatRoomStatus
@@ -14,6 +18,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class ChatWireTest {
@@ -186,5 +191,73 @@ class ChatWireTest {
         assertEquals(2L, decoded.activeRoomCount)
         assertEquals(1L, decoded.requestedRoomCount)
         assertEquals(3L, decoded.mutedRoomCount)
+    }
+
+    @Test
+    fun requestedChatRoomsRequestEncodesLimitAndCursors() {
+        val encoded = wireProto.encodeToByteArray(
+            GetRequestedChatRoomsRequest.serializer(),
+            GetRequestedChatRoomsRequest(
+                limit = 20,
+                untilMessageId = "u",
+                sinceMessageId = "s",
+            ),
+        )
+
+        assertContentEquals(
+            bytes(
+                0x08, 0x14,
+                0x12, 0x01, 0x75,
+                0x1A, 0x01, 0x73,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun acceptChatRoomRequestEncodesRoomId() {
+        val encoded = wireProto.encodeToByteArray(
+            AcceptChatRoomRequest.serializer(),
+            AcceptChatRoomRequest(roomId = "r"),
+        )
+
+        assertContentEquals(
+            bytes(0x0A, 0x01, 0x72),
+            encoded,
+        )
+    }
+
+    @Test
+    fun requestedChatRoomsResponseDecodesRequestedRooms() {
+        val decoded = wireProto.decodeFromByteArray(
+            GetRequestedChatRoomsResponse.serializer(),
+            bytes(
+                0x0A, 0x05,
+                0x0A, 0x01, 0x72,
+                0x38, 0x02,
+                0x10, 0x01,
+            ),
+        )
+
+        val room = decoded.rooms.single()
+        assertEquals("r", room.roomId)
+        assertEquals(ChatRoomStatus.REQUESTED, room.status)
+        assertTrue(decoded.hasNext)
+    }
+
+    @Test
+    fun acceptChatRoomResponseDecodesAcceptedRoom() {
+        val decoded = wireProto.decodeFromByteArray(
+            AcceptChatRoomResponse.serializer(),
+            bytes(
+                0x0A, 0x05,
+                0x0A, 0x01, 0x72,
+                0x38, 0x01,
+            ),
+        )
+
+        val room = assertNotNull(decoded.room)
+        assertEquals("r", room.roomId)
+        assertEquals(ChatRoomStatus.ACCEPTED, room.status)
     }
 }

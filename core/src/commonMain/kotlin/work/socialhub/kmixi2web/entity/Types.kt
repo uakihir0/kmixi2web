@@ -24,6 +24,13 @@ enum class PostMaskType {
 enum class PostPublishingType {
     UNSPECIFIED,
     FOLLOW_AND_COMMUNITY,
+
+    /**
+     * Publishes the post only to the author's profile. The web API encodes
+     * this as ordinal 2; the official API names the same option
+     * `POST_PUBLISHING_TYPE_NOT_PUBLISHING` and numbers it 1.
+     */
+    NOT_PUBLISHING,
 }
 
 @Serializable
@@ -126,4 +133,16 @@ enum class LanguageCode {
     UNKNOWN,
     JP,
     EN,
+}
+
+/**
+ * Origin of an imported post (`com.mixi.mercury.constants.post.PostImportSource`).
+ * [work.socialhub.kmixi2web.entity.Post.importSource] carries the raw value.
+ */
+@Serializable
+@JsExport
+enum class PostImportSource {
+    UNSPECIFIED,
+    /** Imported from an X (Twitter) archive. */
+    X_ARCHIVE,
 }

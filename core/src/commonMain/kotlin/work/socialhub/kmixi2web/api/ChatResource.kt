@@ -1,15 +1,19 @@
 package work.socialhub.kmixi2web.api
 
+import work.socialhub.kmixi2web.api.request.AcceptChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomMessagesRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomsRequest
+import work.socialhub.kmixi2web.api.request.GetRequestedChatRoomsRequest
 import work.socialhub.kmixi2web.api.request.GetUnreadChatRoomCountRequest
 import work.socialhub.kmixi2web.api.request.SendDirectMessageRequest
 import work.socialhub.kmixi2web.api.request.SendGroupMessageRequest
 import work.socialhub.kmixi2web.api.request.SendMessageToRoomRequest
+import work.socialhub.kmixi2web.api.response.AcceptChatRoomResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomMessagesResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomsResponse
+import work.socialhub.kmixi2web.api.response.GetRequestedChatRoomsResponse
 import work.socialhub.kmixi2web.api.response.GetUnreadChatRoomCountResponse
 import work.socialhub.kmixi2web.api.response.SendDirectMessageResponse
 import work.socialhub.kmixi2web.api.response.SendGroupMessageResponse
@@ -54,6 +58,29 @@ interface ChatResource {
     fun getUnreadChatRoomCountBlocking(
         request: GetUnreadChatRoomCountRequest = GetUnreadChatRoomCountRequest(),
     ): Response<GetUnreadChatRoomCountResponse>
+
+    /**
+     * Lists rooms that other personas invited the active persona to.
+     * Pages the same way as [getChatRooms].
+     */
+    suspend fun getRequestedChatRooms(
+        request: GetRequestedChatRoomsRequest,
+    ): Response<GetRequestedChatRoomsResponse>
+
+    @JsExport.Ignore
+    fun getRequestedChatRoomsBlocking(
+        request: GetRequestedChatRoomsRequest,
+    ): Response<GetRequestedChatRoomsResponse>
+
+    /** Accepts a room returned by [getRequestedChatRooms]. */
+    suspend fun acceptChatRoom(
+        request: AcceptChatRoomRequest,
+    ): Response<AcceptChatRoomResponse>
+
+    @JsExport.Ignore
+    fun acceptChatRoomBlocking(
+        request: AcceptChatRoomRequest,
+    ): Response<AcceptChatRoomResponse>
 
     /** Sends to an existing room. */
     suspend fun sendMessageToRoom(
