@@ -194,11 +194,12 @@ class ChatWireTest {
     }
 
     @Test
-    fun requestedChatRoomsRequestEncodesLimitAndSinceCursor() {
+    fun requestedChatRoomsRequestEncodesLimitAndCursors() {
         val encoded = wireProto.encodeToByteArray(
             GetRequestedChatRoomsRequest.serializer(),
             GetRequestedChatRoomsRequest(
                 limit = 20,
+                untilMessageId = "u",
                 sinceMessageId = "s",
             ),
         )
@@ -206,6 +207,7 @@ class ChatWireTest {
         assertContentEquals(
             bytes(
                 0x08, 0x14,
+                0x12, 0x01, 0x75,
                 0x1A, 0x01, 0x73,
             ),
             encoded,
