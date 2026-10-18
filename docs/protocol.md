@@ -346,6 +346,8 @@ and `CommunitySummary.type` are typed as these enums rather than raw integers.
 | `GetChatRoom` | room ID | room |
 | `GetChatRoomMessages` | room ID, limit, until/since message ID | messages, has-next flag |
 | `GetUnreadChatRoomCount` | empty | active, requested, and muted room counts |
+| `GetRequestedChatRooms` | limit, until/since message ID | rooms, has-next flag |
+| `AcceptChatRoom` | room ID | room |
 | `SendMessageToRoom` | room ID, text, media IDs | message |
 | `SendDirectMessage` | receiver ID, text, media IDs, post ID | message |
 | `SendGroupMessage` | receiver IDs, text, media IDs | message |
@@ -354,7 +356,8 @@ Chat pages by message ID rather than by opaque cursor. `GetChatRoomsRequest`
 uses `limit` (1), `until_message_id` (2), and `since_message_id` (3);
 `GetChatRoomMessagesRequest` shifts them behind `room_id` (1) to `limit` (2),
 `until_message_id` (3), and `since_message_id` (4). Both responses pair their
-list at field 1 with `has_next` (2).
+list at field 1 with `has_next` (2). `GetRequestedChatRoomsRequest` and its
+response use the same layout as `GetChatRooms`.
 
 `ChatRoom` uses `room_id` (1), `is_group` (2), `title` (3), `members` (4),
 `created_at` (5), `message` (6), `status` (7), `is_mute` (8), and `is_invisible`
@@ -370,6 +373,8 @@ media-only and system messages carry none.
 
 `ChatRoomStatus` is unknown `0`, accepted `1`, requested `2`, and requesting `3`
 — requested and requesting distinguish the direction of a pending invitation.
+`GetRequestedChatRooms` lists the rooms the active persona has been invited to,
+and `AcceptChatRoom` takes their `room_id` (1) and returns the accepted room.
 `ChatRoomMessageType` is message `0` followed by the system events invite `1`,
 join `2`, leave `3`, change-title `4`, and change-icon `5`.
 
@@ -394,7 +399,7 @@ Representative method names:
 - Events: `CreateEventCommunity`, `GetOngoingEventCommunities`,
   `CloseEventCommunity`
 - Chat administration: `CreateChatRoom`, `UpdateChatRoomTitle`,
-  `AcceptChatRoom`, `ExitChatRoom`, `MakeChatRoomMute`, `SearchChatRooms`
+  `ExitChatRoom`, `MakeChatRoomMute`, `SearchChatRooms`
 - Discovery: `GetRecommendations`
 
 ## Sources used for schema validation

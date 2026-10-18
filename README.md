@@ -302,6 +302,9 @@ so the room ID has to be read back from the returned message. Use
 `sendMessageToRoom(...)` for a room you already know and `sendGroupMessage(...)`
 to open a group room with several personas.
 
+Rooms that other personas invited you to can be listed with
+`getRequestedChatRooms(...)` and accepted with `acceptChatRoom(...)`.
+
 ### Browser JavaScript
 
 Browsers cannot set a cross-origin `Cookie` header. Put a same-origin proxy in
@@ -343,7 +346,8 @@ available.
 - Media upload preparation, binary upload, and processing status polling
 - Participating community lists, community lookup, and community timelines
 - Community member lists, joining, join requests, and leaving
-- Chat room lists, single room lookup, room message history, and unread counts
+- Chat room and requested-room lists, single room lookup, room message history,
+  unread counts, and accepting invitations
 - Direct, group, and existing-room message sending with media and shared posts
 - Raw unary calls for MercuryService methods not yet exposed as typed resources
 

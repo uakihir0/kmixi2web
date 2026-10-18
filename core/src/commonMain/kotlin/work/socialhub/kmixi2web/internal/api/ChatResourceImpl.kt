@@ -1,16 +1,20 @@
 package work.socialhub.kmixi2web.internal.api
 
 import work.socialhub.kmixi2web.api.ChatResource
+import work.socialhub.kmixi2web.api.request.AcceptChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomMessagesRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomRequest
 import work.socialhub.kmixi2web.api.request.GetChatRoomsRequest
+import work.socialhub.kmixi2web.api.request.GetRequestedChatRoomsRequest
 import work.socialhub.kmixi2web.api.request.GetUnreadChatRoomCountRequest
 import work.socialhub.kmixi2web.api.request.SendDirectMessageRequest
 import work.socialhub.kmixi2web.api.request.SendGroupMessageRequest
 import work.socialhub.kmixi2web.api.request.SendMessageToRoomRequest
+import work.socialhub.kmixi2web.api.response.AcceptChatRoomResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomMessagesResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomResponse
 import work.socialhub.kmixi2web.api.response.GetChatRoomsResponse
+import work.socialhub.kmixi2web.api.response.GetRequestedChatRoomsResponse
 import work.socialhub.kmixi2web.api.response.GetUnreadChatRoomCountResponse
 import work.socialhub.kmixi2web.api.response.SendDirectMessageResponse
 import work.socialhub.kmixi2web.api.response.SendGroupMessageResponse
@@ -81,6 +85,36 @@ internal class ChatResourceImpl(
     override fun getUnreadChatRoomCountBlocking(
         request: GetUnreadChatRoomCountRequest,
     ) = toBlocking { getUnreadChatRoomCount(request) }
+
+    override suspend fun getRequestedChatRooms(
+        request: GetRequestedChatRoomsRequest,
+    ): Response<GetRequestedChatRoomsResponse> {
+        return client.call(
+            "GetRequestedChatRooms",
+            request,
+            GetRequestedChatRoomsRequest.serializer(),
+            GetRequestedChatRoomsResponse.serializer(),
+        )
+    }
+
+    override fun getRequestedChatRoomsBlocking(
+        request: GetRequestedChatRoomsRequest,
+    ) = toBlocking { getRequestedChatRooms(request) }
+
+    override suspend fun acceptChatRoom(
+        request: AcceptChatRoomRequest,
+    ): Response<AcceptChatRoomResponse> {
+        return client.call(
+            "AcceptChatRoom",
+            request,
+            AcceptChatRoomRequest.serializer(),
+            AcceptChatRoomResponse.serializer(),
+        )
+    }
+
+    override fun acceptChatRoomBlocking(
+        request: AcceptChatRoomRequest,
+    ) = toBlocking { acceptChatRoom(request) }
 
     override suspend fun sendMessageToRoom(
         request: SendMessageToRoomRequest,

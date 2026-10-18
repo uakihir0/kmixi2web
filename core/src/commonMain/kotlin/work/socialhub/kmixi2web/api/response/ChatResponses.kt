@@ -44,6 +44,22 @@ class GetUnreadChatRoomCountResponse(
 
 @Serializable
 @JsExport
+class GetRequestedChatRoomsResponse(
+    @ProtoNumber(1)
+    var rooms: List<ChatRoom> = emptyList(),
+    @ProtoNumber(2)
+    var hasNext: Boolean = false,
+)
+
+@Serializable
+@JsExport
+class AcceptChatRoomResponse(
+    @ProtoNumber(1)
+    var room: ChatRoom? = null,
+)
+
+@Serializable
+@JsExport
 class SendMessageToRoomResponse(
     @ProtoNumber(1)
     var message: ChatRoomMessage? = null,
