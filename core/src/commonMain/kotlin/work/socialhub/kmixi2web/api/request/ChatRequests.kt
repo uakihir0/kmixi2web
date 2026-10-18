@@ -41,6 +41,24 @@ class GetUnreadChatRoomCountRequest
 
 @Serializable
 @JsExport
+class GetRequestedChatRoomsRequest(
+    @ProtoNumber(1)
+    var limit: Int? = null,
+    @ProtoNumber(2)
+    var untilMessageId: String? = null,
+    @ProtoNumber(3)
+    var sinceMessageId: String? = null,
+)
+
+@Serializable
+@JsExport
+class AcceptChatRoomRequest(
+    @ProtoNumber(1)
+    var roomId: String,
+)
+
+@Serializable
+@JsExport
 class SendMessageToRoomRequest(
     @ProtoNumber(1)
     var roomId: String,

@@ -19,6 +19,7 @@ import work.socialhub.kmixi2web.api.response.GetLikingPersonasResponse
 import work.socialhub.kmixi2web.entity.FeedSourceType
 import work.socialhub.kmixi2web.entity.LanguageCode
 import work.socialhub.kmixi2web.entity.NotificationActivityType
+import work.socialhub.kmixi2web.entity.PostPublishingType
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -78,6 +79,46 @@ class ProtoWireTest {
                 0x22, 0x02, 0x6D, 0x32,
                 0x30, 0x01,
                 0x4A, 0x02, 0x01, 0x02,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun createPostRequestEncodesNotPublishingPublishingType() {
+        val encoded = proto.encodeToByteArray(
+            CreatePostRequest.serializer(),
+            CreatePostRequest(
+                text = "hi",
+                publishingType = PostPublishingType.NOT_PUBLISHING,
+            ),
+        )
+
+        // field 12 (publishingType) varint = 2 (observed for the web client's "profile only" option)
+        assertContentEquals(
+            bytes(
+                0x0A, 0x02, 0x68, 0x69,
+                0x60, 0x02,
+            ),
+            encoded,
+        )
+    }
+
+    @Test
+    fun createPostRequestKeepsFollowAndCommunityPublishingType() {
+        val encoded = proto.encodeToByteArray(
+            CreatePostRequest.serializer(),
+            CreatePostRequest(
+                text = "hi",
+                publishingType = PostPublishingType.FOLLOW_AND_COMMUNITY,
+            ),
+        )
+
+        // field 12 (publishingType) varint = 1 (existing ordinal must stay stable)
+        assertContentEquals(
+            bytes(
+                0x0A, 0x02, 0x68, 0x69,
+                0x60, 0x01,
             ),
             encoded,
         )

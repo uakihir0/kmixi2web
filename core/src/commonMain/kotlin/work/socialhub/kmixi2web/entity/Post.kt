@@ -79,6 +79,15 @@ class Post(
     var isSensitive: Boolean = false,
     @ProtoNumber(25)
     var community: CommunitySummary? = null,
+    /**
+     * Community shared by this post (a "community share" post created with
+     * [work.socialhub.kmixi2web.api.request.CreatePostRequest.attachedCommunityId]).
+     * The server may include a nested [Community] with the fields modeled
+     * here (name, purpose, cover image, member count, member previews and the
+     * reader's own membership); fields not modeled by [Community] are skipped.
+     */
+    @ProtoNumber(26)
+    var attachedCommunity: Community? = null,
     @ProtoNumber(27)
     var mentions: List<PersonaName> = emptyList(),
     @ProtoNumber(28)
@@ -97,9 +106,30 @@ class Post(
     @ProtoNumber(34)
     var publishingType: Int = 0,
     /**
+     * True if the post has been edited after it was created. The web client
+     * shows an "edited" (pencil) icon in the post header. The edit time and
+     * edit history are not provided.
+     */
+    @ProtoNumber(36)
+    var isEdited: Boolean = false,
+    /**
+     * Calendar date carried by some posts, such as the original posting date
+     * of a post imported from an X archive (the web client shows it as
+     * "<date> memories"). Only the date is provided, not the time of day.
+     * Null when the post has no such date.
+     */
+    @ProtoNumber(38)
+    var date: CalendarDate? = null,
+    /**
      * Poll attached to this post. Vote with
      * [work.socialhub.kmixi2web.api.PostResource.votePoll].
      */
     @ProtoNumber(40)
     var poll: Poll? = null,
+    /**
+     * Raw [PostImportSource] value. 0 (UNSPECIFIED) when the post was not
+     * imported, 1 (X_ARCHIVE) for a post imported from an X archive.
+     */
+    @ProtoNumber(42)
+    var importSource: Int = 0,
 )
