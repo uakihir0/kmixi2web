@@ -8,8 +8,9 @@ import kotlin.js.JsExport
  * Poll attached to a post (`Post.poll`, field 40).
  *
  * Until the reader votes, [canViewResults] is false and the server reports
- * zero vote counts. After voting (or for the post author, or once the poll is
- * closed) the counts and percentages are filled in.
+ * zero vote counts. Clients should use [canViewResults] to decide whether to
+ * render counts; it is normally true after voting, for the post author, or
+ * once the poll is closed.
  */
 @Serializable
 @JsExport

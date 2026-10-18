@@ -79,7 +79,7 @@ class PollWireTest {
 
     @Test
     fun votePollResponseDecodesUnvotedPoll() {
-        // A poll the reader has not voted for: results hidden, no voted option, closed
+        // A closed poll whose results are still hidden; can_view_results is authoritative
         val decoded = wireProto.decodeFromByteArray(
             VotePollResponse.serializer(),
             bytes(

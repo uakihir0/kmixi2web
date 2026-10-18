@@ -121,6 +121,9 @@ mixi2.post().votePoll(
 )
 ```
 
+`optionIndex` is the chosen option's `PollOption.index`, not its position in
+the list.
+
 ### Reactions
 
 Reaction summaries are included in each `Post`:

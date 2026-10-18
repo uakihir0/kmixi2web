@@ -78,11 +78,10 @@ hashtag timelines add `hashtag` at field 1 and `media_only` at field 2.
 | `mask_caption` | 11 | optional string |
 | `publishing_type` | 12 | optional enum |
 
-`Post` currently has fields 1 through 34, plus `poll` (40). The library models
-the stable reading surface including IDs, timestamps, text, counts, media,
-reply/repost/quote references, reactions, links, mentions, decorations, mask
-state, and polls. Unknown
-fields are skipped by protobuf decoding.
+`Post` currently has fields 1 through 44. The library models the stable reading
+surface including IDs, timestamps, text, counts, media, reply/repost/quote
+references, reactions, links, mentions, decorations, mask state, and polls.
+Fields that are not modeled are skipped by protobuf decoding.
 
 ### Reactions
 
@@ -270,12 +269,13 @@ A post can carry a `Poll` at field 40. `Poll` uses `poll_id` (1), `options` (2),
 `PollOption` has `index` (1), `text` (2), `vote_count` (3), and `percentage`
 (4, a `float` from 0 to 100). Until the reader votes, `can_view_results` is
 false and the counts are zero; the web client then shows the options as vote
-buttons, and shows the results once `can_view_results` is true (after voting,
-for the author, or once the poll is closed). `VotePollRequest` takes `post_id`
-(1) and `option_index` (2), and `VotePollResponse` returns the updated `poll`
-(1). Polls are created through `CreatePostRequest.poll` (18), a
-`CreatePollParams` with `options` (1) and optional `duration_seconds` (2), which
-is not modeled yet.
+buttons and uses `can_view_results` to decide whether to show the results
+(normally true after voting, for the author, or once the poll is closed).
+`VotePollRequest` takes `post_id` (1) and `option_index` (2) — the `index` of
+the chosen `PollOption`, not its position in the list — and `VotePollResponse`
+returns the updated `poll` (1). Polls are created through
+`CreatePostRequest.poll` (18), a `CreatePollParams` with `options` (1) and
+optional `duration_seconds` (2), which is not modeled yet.
 
 `PostReactionType` values are non-contiguous: unknown `0`, reply `100`, repost
 `101`, quote `102`, like `200`, and bookmark `201`. The client uses the same

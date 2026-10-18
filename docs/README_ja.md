@@ -121,6 +121,8 @@ mixi2.post().votePoll(
 )
 ```
 
+`optionIndex` には、リスト上の位置ではなく選択肢の `PollOption.index` を指定します。
+
 ### リアクション
 
 各 `Post` にはリアクション集計が含まれます。
